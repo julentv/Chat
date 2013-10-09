@@ -1,5 +1,10 @@
 package es.deusto.ingenieria.ssdd.chat.client.controller;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observer;
@@ -60,21 +65,49 @@ public class ChatClientController {
 		this.observable.deleteObserver(observer);
 	}
 	
+	public void sendDatagramPacket(String message){
+		try (DatagramSocket udpSocket = new DatagramSocket()) {
+			InetAddress serverHost = InetAddress.getByName(this.serverIP);	
+			byte[] byteMsg = message.getBytes();
+			DatagramPacket request = new DatagramPacket(byteMsg, byteMsg.length, serverHost, this.serverPort);
+			udpSocket.send(request);
+		} catch (SocketException e) {
+			System.err.println("# UDPClient Socket error: " + e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println("# UDPClient IO error: " + e.getMessage());
+		}
+	}
+	
 	public boolean connect(String ip, int port, String nick) {
 		
+		String message = "101&"+nick;
 		//ENTER YOUR CODE TO CONNECT
-		
+				//¿Primero enviar conexion y luego crear usuario? 
 		this.connectedUser = new User();
 		this.connectedUser.setNick(nick);
 		this.serverIP = ip;
 		this.serverPort = port;
+		sendDatagramPacket(message);
 		
 		return true;
 	}
 	
 	public boolean disconnect() {
 		
-		//ENTER YOUR CODE TO DISCONNECTa
+		String message;
+		//ENTER YOUR CODE TO DISCONNECT
+		if (isChatSessionOpened()){
+			 message = "105";
+			sendDatagramPacket(message);
+			message="205"+chatReceiver.getNick();
+			sendDatagramPacket(message);
+		}
+		
+		message= "106";
+		sendDatagramPacket(message);
+		message= "206";
+		sendDatagramPacket(message);
 		
 		this.connectedUser = null;
 		this.chatReceiver = null;
