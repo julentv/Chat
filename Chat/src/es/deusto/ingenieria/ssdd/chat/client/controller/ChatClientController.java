@@ -74,7 +74,7 @@ public class ChatClientController {
 	
 	public boolean disconnect() {
 		
-		//ENTER YOUR CODE TO DISCONNECT
+		//ENTER YOUR CODE TO DISCONNECTa
 		
 		this.connectedUser = null;
 		this.chatReceiver = null;
