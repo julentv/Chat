@@ -176,13 +176,9 @@ public class ChatClientController {
 		if (isChatSessionOpened()){
 			 message = "105";
 			sendDatagramPacket(message);
-			message="205"+chatReceiver.getNick();
-			sendDatagramPacket(message);
 		}
 		
 		message= "106";
-		sendDatagramPacket(message);
-		message= "206";
 		sendDatagramPacket(message);
 		
 		this.connectedUser = null;
