@@ -69,12 +69,14 @@ public class ChatClientController {
 	
 	private int calculateNumberOfMessages (String message){
 		int numberOfMessages=1;
-		int messageLength = message.getBytes().length;
-		if (messageLength > MESSAGE_MAX_LENGTH){
+		String[] messageFields = message.split("&");
+		int bytesToRest = messageFields[0].getBytes().length + messageFields[1].getBytes().length;
+		int messageLength = messageFields[2].getBytes().length;
+		if (messageLength > MESSAGE_MAX_LENGTH - bytesToRest){
 			
-			numberOfMessages=messageLength / MESSAGE_MAX_LENGTH;
+			numberOfMessages=messageLength / (MESSAGE_MAX_LENGTH - bytesToRest);
 			
-			if (messageLength % MESSAGE_MAX_LENGTH != 0)
+			if (messageLength % (MESSAGE_MAX_LENGTH - bytesToRest) != 0)
 			{						
 				numberOfMessages++;
 			}
@@ -116,15 +118,16 @@ public class ChatClientController {
 	}
 	
 	
-	
-	private byte[][] divideMessage (String completeMessage){
-		byte [][] aMessages = null;
+	private ArrayList<byte[]> divideMessage (String completeMessage){
+		ArrayList<byte[]> aMessages = new ArrayList<byte[]>();
 		int numberOfMessages = calculateNumberOfMessages(completeMessage);
-		
-		
+		String message;
+		for (int i=0; i<numberOfMessages;i++){
+			//message= completeMessage.substring(0, );
+		}
 		return aMessages;		
-		
 	}
+	
 	//Método que envía un paquete
 	public void sendDatagramPacket(String message){
 		try (DatagramSocket udpSocket = new DatagramSocket()) {
@@ -143,19 +146,21 @@ public class ChatClientController {
 	/**
 	 * This method is used to receive a datagramPacket
 	 */
-	private void receiveDatagramPacket(){
+	private DatagramPacket receiveDatagramPacket(){
 		try (DatagramSocket udpSocket = new DatagramSocket()) {
 			
 			byte[] buffer = new byte[1024];
 			DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
 			udpSocket.receive(reply);			
 			
+			return reply;
 		} catch (SocketException e) {
 			System.err.println("# UDPClient Socket error: " + e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
 			System.err.println("# UDPClient IO error: " + e.getMessage());
 		}
+		return null;
 	}
 	public boolean connect(String ip, int port, String nick) {
 		
@@ -174,17 +179,11 @@ public class ChatClientController {
 		String message;
 		//ENTER YOUR CODE TO DISCONNECT
 		if (isChatSessionOpened()){
-			 message = "105";
-			sendDatagramPacket(message);
-			message="205"+chatReceiver.getNick();
-			sendDatagramPacket(message);
+			sendChatClosure();
+			
 		}
-		
 		message= "106";
 		sendDatagramPacket(message);
-		message= "206";
-		sendDatagramPacket(message);
-		
 		this.connectedUser = null;
 		this.chatReceiver = null;
 		
@@ -193,7 +192,10 @@ public class ChatClientController {
 	
 	public List<String> getConnectedUsers() {
 		List<String> connectedUsers = new ArrayList<>();
-		
+		String message="107";
+		sendDatagramPacket(message);
+		DatagramPacket receivedPacket= receiveDatagramPacket();
+		receivedPacket.getData().toString();
 		//ENTER YOUR CODE TO OBTAIN THE LIST OF CONNECTED USERS
 		connectedUsers.add("Default");
 		
@@ -203,6 +205,7 @@ public class ChatClientController {
 	public boolean sendMessage(String message) {
 		
 		//ENTER YOUR CODE TO SEND A MESSAGE
+		
 		
 		return true;
 	}
@@ -219,8 +222,8 @@ public class ChatClientController {
 	
 	public boolean sendChatRequest(String to) {
 		
-		//ENTER YOUR CODE TO SEND A CHAT REQUEST
-		
+		String message= "102&"+to;
+		sendDatagramPacket(message);
 		this.chatReceiver = new User();
 		this.chatReceiver.setNick(to);
 		
@@ -240,21 +243,24 @@ public class ChatClientController {
 	public boolean acceptChatRequest() {
 		
 		//ENTER YOUR CODE TO ACCEPT A CHAT REQUEST
-		
+		String message= "103&"+this.connectedUser.getNick();
+		sendDatagramPacket(message);
 		return true;
 	}
 	
 	public boolean refuseChatRequest() {
 		
 		//ENTER YOUR CODE TO REFUSE A CHAT REQUEST
-		
+		String message= "104&"+this.connectedUser.getNick();
+		sendDatagramPacket(message);
 		return true;
 	}	
 	
 	public boolean sendChatClosure() {
 		
 		//ENTER YOUR CODE TO SEND A CHAT CLOSURE
-		
+		String message="105&"+this.chatReceiver.getNick();
+		sendDatagramPacket(message);
 		this.chatReceiver = null;
 		
 		return true;
