@@ -1,5 +1,6 @@
 package es.deusto.ingenieria.ssdd.chat.client.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -18,6 +19,7 @@ public class ChatClientController {
 	private User connectedUser;
 	private User chatReceiver;
 	private LocalObservable observable;
+	private static final int MESSAGE_MAX_LENGTH=1024;
 	
 	public ChatClientController() {
 		this.observable = new LocalObservable();
@@ -65,6 +67,65 @@ public class ChatClientController {
 		this.observable.deleteObserver(observer);
 	}
 	
+	private int calculateNumberOfMessages (String message){
+		int numberOfMessages=1;
+		int messageLength = message.getBytes().length;
+		if (messageLength > MESSAGE_MAX_LENGTH){
+			
+			numberOfMessages=messageLength / MESSAGE_MAX_LENGTH;
+			
+			if (messageLength % MESSAGE_MAX_LENGTH != 0)
+			{						
+				numberOfMessages++;
+			}
+		}
+		return numberOfMessages;
+	}
+	
+	private ArrayList <byte []> divideList (ArrayList <User> connectedUsers) throws IOException{
+		ArrayList <byte []> aMessages = new ArrayList<byte []>();
+		aMessages.add(new byte [0]);
+		int cont =0;
+		int arrayPosition=0;
+		String nick;
+		for (int i=0; i< connectedUsers.size(); i++){
+			nick= connectedUsers.get(i).getNick().concat("&");
+			cont += nick.getBytes().length;
+			
+			if(cont> MESSAGE_MAX_LENGTH){
+				arrayPosition++;
+				aMessages.add(nick.getBytes());
+				
+				cont=connectedUsers.get(i).toString().getBytes().length;
+			}
+			else
+			{
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+				outputStream.write( aMessages.get(arrayPosition) );
+				outputStream.write( nick.getBytes() );
+								
+				aMessages.set(arrayPosition, outputStream.toByteArray( ));
+				
+			}
+			
+			
+		}
+				
+		
+		return aMessages;
+	}
+	
+	
+	
+	private byte[][] divideMessage (String completeMessage){
+		byte [][] aMessages = null;
+		int numberOfMessages = calculateNumberOfMessages(completeMessage);
+		
+		
+		return aMessages;		
+		
+	}
+	//Método que envía un paquete
 	public void sendDatagramPacket(String message){
 		try (DatagramSocket udpSocket = new DatagramSocket()) {
 			InetAddress serverHost = InetAddress.getByName(this.serverIP);	
@@ -79,17 +140,32 @@ public class ChatClientController {
 		}
 	}
 	
+	/**
+	 * This method is used to receive a datagramPacket
+	 */
+	private void receiveDatagramPacket(){
+		try (DatagramSocket udpSocket = new DatagramSocket()) {
+			
+			byte[] buffer = new byte[1024];
+			DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
+			udpSocket.receive(reply);			
+			
+		} catch (SocketException e) {
+			System.err.println("# UDPClient Socket error: " + e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println("# UDPClient IO error: " + e.getMessage());
+		}
+	}
 	public boolean connect(String ip, int port, String nick) {
 		
 		String message = "101&"+nick;
 		//ENTER YOUR CODE TO CONNECT
-				//¿Primero enviar conexion y luego crear usuario? 
-		this.connectedUser = new User();
-		this.connectedUser.setNick(nick);
 		this.serverIP = ip;
 		this.serverPort = port;
 		sendDatagramPacket(message);
-		
+		this.connectedUser = new User();
+		this.connectedUser.setNick(nick);
 		return true;
 	}
 	
