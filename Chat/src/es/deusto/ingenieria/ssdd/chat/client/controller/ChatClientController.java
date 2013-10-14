@@ -180,10 +180,12 @@ public class ChatClientController {
 		//ENTER YOUR CODE TO DISCONNECT
 		if (isChatSessionOpened()){
 			sendChatClosure();
-			
+			 
 		}
+		
 		message= "106";
 		sendDatagramPacket(message);
+		
 		this.connectedUser = null;
 		this.chatReceiver = null;
 		
