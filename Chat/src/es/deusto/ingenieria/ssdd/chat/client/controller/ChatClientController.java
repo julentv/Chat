@@ -20,7 +20,8 @@ public class ChatClientController {
 	private User chatReceiver;
 	private LocalObservable observable;
 	private static final int MESSAGE_MAX_LENGTH=1024;
-	
+	private String incompletedListUsers;
+	private String incompletedMessage;
 	public ChatClientController() {
 		this.observable = new LocalObservable();
 		this.serverIP = null;
@@ -70,7 +71,7 @@ public class ChatClientController {
 	private int calculateNumberOfMessages (String message){
 		int numberOfMessages=1;
 		String[] messageFields = message.split("&");
-		int bytesToRest = messageFields[0].getBytes().length + messageFields[1].getBytes().length;
+		int bytesToRest = messageFields[0].getBytes().length + messageFields[1].getBytes().length +"&&&".getBytes().length;
 		int messageLength = messageFields[2].getBytes().length;
 		if (messageLength > MESSAGE_MAX_LENGTH - bytesToRest){
 			
@@ -121,9 +122,13 @@ public class ChatClientController {
 	private ArrayList<byte[]> divideMessage (String completeMessage){
 		ArrayList<byte[]> aMessages = new ArrayList<byte[]>();
 		int numberOfMessages = calculateNumberOfMessages(completeMessage);
+		int a= completeMessage.length()/numberOfMessages;
 		String message;
 		for (int i=0; i<numberOfMessages;i++){
-			//message= completeMessage.substring(0, );
+			message= completeMessage.substring(a*i, a*(i+1));
+			if(i!=numberOfMessages){
+				message.concat("&");
+			}
 		}
 		return aMessages;		
 	}
@@ -162,16 +167,29 @@ public class ChatClientController {
 		}
 		return null;
 	}
-	public boolean connect(String ip, int port, String nick) {
+	
+public boolean connect(String ip, int port, String nick) {
 		
 		String message = "101&"+nick;
+		String returnMessage ="";
 		//ENTER YOUR CODE TO CONNECT
 		this.serverIP = ip;
 		this.serverPort = port;
 		sendDatagramPacket(message);
-		this.connectedUser = new User();
-		this.connectedUser.setNick(nick);
-		return true;
+		DatagramPacket receivedPacket= receiveDatagramPacket();
+		returnMessage=receivedPacket.getData().toString();
+		if (returnMessage.split("&")[0].equals("101")){
+			this.connectedUser = new User();
+			this.connectedUser.setNick(nick);
+			//crear clase k herede de Thread implement run (meter receive, ejecutar otro new run, 
+			//y procesar mensaje
+			return true;
+		}
+		else{
+			return false;
+		}
+		
+		
 	}
 	
 	public boolean disconnect() {
@@ -192,12 +210,12 @@ public class ChatClientController {
 		return true;
 	}
 	
-	public List<String> getConnectedUsers() {
-		List<String> connectedUsers = new ArrayList<>();
+	public ArrayList<String> getConnectedUsers() {
+		ArrayList<String> connectedUsers = new ArrayList<>();
 		String message="107";
 		sendDatagramPacket(message);
-		DatagramPacket receivedPacket= receiveDatagramPacket();
-		receivedPacket.getData().toString();
+		//DatagramPacket receivedPacket= receiveDatagramPacket();
+		//receivedPacket.getData().toString();
 		//ENTER YOUR CODE TO OBTAIN THE LIST OF CONNECTED USERS
 		connectedUsers.add("Default");
 		
