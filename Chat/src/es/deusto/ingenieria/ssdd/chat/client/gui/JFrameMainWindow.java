@@ -194,6 +194,22 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		panelSendMsg.add(scrollPaneNewMsg, BorderLayout.CENTER);		
 	}
 	
+	/**
+	 * This method refresh the list of connected users
+	 * @param allUsers list of connected users separated by &
+	 */
+	public void refreshUserList(String allUsers){
+		String[] users = allUsers.split("&");
+		
+		if (users.length==0) {
+			DefaultListModel<String> listModel = new DefaultListModel<>();
+			
+			for (String user : users) {
+				listModel.addElement(user);
+			}
+			this.listUsers.setModel(listModel);
+		}
+	}
 	private void btnConnectClick() {
 		if (!this.controller.isConnected()) {
 			if (this.txtFieldServerIP.getText().trim().isEmpty() ||

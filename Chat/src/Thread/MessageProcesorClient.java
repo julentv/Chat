@@ -6,11 +6,13 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 import es.deusto.ingenieria.ssdd.chat.client.controller.ChatClientController;
+import es.deusto.ingenieria.ssdd.chat.client.gui.JFrameMainWindow;
 import es.deusto.ingenieria.ssdd.chat.exceptions.IncorrectMessageException;
 
 public class MessageProcesorClient extends Thread{
 
 	private ChatClientController controller;
+	private JFrameMainWindow window;
 	
 	/**
 	 * This method concat the split messages that corresponds to 
@@ -26,7 +28,47 @@ public class MessageProcesorClient extends Thread{
 				//escribir en pantalla
 			}
 		}
+		else{
+			if(message.charAt(message.length()-1)=='&'){
+				controller.incompletedMessage= controller.incompletedMessage.concat(message);
+			}
+			else{
+				controller.incompletedMessage= controller.incompletedMessage.concat(message);
+				//escribir en pantalla
+				controller.incompletedMessage=null;
+			}
+		}
 		
+	}
+	
+	/**
+	 * This method concat the split messages that corresponds to 
+	 * a whole message of the list of connected users
+	 * @param message formed by the nicks of connected users
+	 */
+	private String concatListOfUsers(String message){
+		String userList=null;
+		if (controller.incompletedListUsers==null){
+			if(message.charAt(message.length()-1)== '&'){
+				controller.incompletedListUsers= message;
+			}
+			else{
+				//crear lista
+				userList= message;
+			}
+		}
+		else{
+			if(message.charAt(message.length()-1)=='&'){
+				controller.incompletedListUsers= controller.incompletedListUsers.concat(message);
+			}
+			else{
+				controller.incompletedListUsers= controller.incompletedListUsers.concat(message);
+				//crear lista
+				userList= controller.incompletedListUsers;
+				controller.incompletedListUsers=null;
+			}
+		}
+		return userList;
 	}
 	@Override
 	public void run() {
@@ -44,9 +86,9 @@ public class MessageProcesorClient extends Thread{
 		
 		switch (numericalId){
 			case "201":
-				//connection successfull, send list of users
-				//call method ConcatList(returnMessage)
-				//Boton=disconnect
+				String users;
+				users=concatListOfUsers(returnMessage.substring(3));
+				window.refreshUserList(users);
 				break;
 			case "202":
 				//Peticion recibida de A (202&nickA&nickMio)
