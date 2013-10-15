@@ -2,4 +2,4 @@ Chat
 ====
 
 Proyecto de Sistemas distribuidos avanzados.
-Parte servidora de un chat UDP.
+Parte cliente de un chat UDP.
