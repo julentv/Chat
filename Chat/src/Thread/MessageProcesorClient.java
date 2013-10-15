@@ -98,14 +98,18 @@ public class MessageProcesorClient extends Thread{
 				break;
 			case "203":
 				//B ha aceptado (203)--desblokear texto para escribir
+				
 				//blokear resto de lista
+				window.blockUserList(true);
 				break;
 			case "204":
 				//B ha rechazado ventana emergente 
+				window.conversationRejected(returnMessage.split("&")[1]);
 				break;
 			case "205":
 				//A ha cerrado la conversacion
 				//desblokear lista de usuarios
+				window.blockUserList(false);
 				//limpiar ventana de texto
 				break;
 			case "206":

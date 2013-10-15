@@ -211,6 +211,7 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		}
 	}
 	private void btnConnectClick() {
+
 		if (!this.controller.isConnected()) {
 			if (this.txtFieldServerIP.getText().trim().isEmpty() ||
 				this.txtFieldServerIP.getText().trim().isEmpty() ||
@@ -272,6 +273,19 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		}
 	}
 	
+	public void conversationRejected(String nick){
+		JOptionPane.showMessageDialog(this, nick+" rejected establishing a conversation with you.");
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void blockUserList(Boolean block){
+		if (block==true){
+			this.listUsers.enable(true);
+		}
+		else{
+			this.listUsers.enable(false);
+		}
+	}
 	private void selectUser() {
 		if (this.listUsers.getSelectedIndex() != -1 && this.controller.getConnectedUser() != null) {		
 			//Send chat Request
