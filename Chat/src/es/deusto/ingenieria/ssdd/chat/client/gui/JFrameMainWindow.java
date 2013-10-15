@@ -290,28 +290,11 @@ public class JFrameMainWindow extends JFrame implements Observer {
 			
 			String message = this.textAreaSendMsg.getText().trim();
 			
-			if (this.controller.sendMessage(message)) {
-				this.appendSentMessageToHistory();
-				this.textAreaSendMsg.setText("");
-			} else {
-				JOptionPane.showMessageDialog(this, "Message can't be delivered.", "Error sending a message", JOptionPane.ERROR_MESSAGE);				
-			}
+			
 		}
 	}
 	
-	private void appendSentMessageToHistory() {		
-		String time = textFormatter.format(GregorianCalendar.getInstance().getTime());		
-		String newMessage = " " + time + " - [" + this.controller.getConnectedUser() + "]: " + this.textAreaSendMsg.getText() + "\n";
-		SimpleAttributeSet attrs = new SimpleAttributeSet();
-		StyleConstants.setBold(attrs, true);
-		StyleConstants.setForeground(attrs, Color.WHITE);
-		
-		try {
-			this.textAreaHistory.getStyledDocument().insertString(this.textAreaHistory.getStyledDocument().getLength(), newMessage, attrs);
-		} catch (BadLocationException e) {
-			System.err.println("# Error updating message history: " + e.getMessage());
-		} 
-	}
+
 	
 	private void appendReceivedMessageToHistory(String message, String user, long timestamp) {		
 		String time = textFormatter.format(new Date(timestamp));		

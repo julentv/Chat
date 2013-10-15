@@ -20,8 +20,8 @@ public class ChatClientController {
 	private User chatReceiver;
 	private LocalObservable observable;
 	private static final int MESSAGE_MAX_LENGTH=1024;
-	private String incompletedListUsers;
-	private String incompletedMessage;
+	public String incompletedListUsers=null;
+	public String incompletedMessage=null;
 	public ChatClientController() {
 		this.observable = new LocalObservable();
 		this.serverIP = null;
@@ -108,13 +108,10 @@ public class ChatClientController {
 				outputStream.write( nick.getBytes() );
 								
 				aMessages.set(arrayPosition, outputStream.toByteArray( ));
-				
 			}
-			
-			
+						
 		}
-				
-		
+			
 		return aMessages;
 	}
 	
@@ -129,6 +126,7 @@ public class ChatClientController {
 			if(i!=numberOfMessages){
 				message.concat("&");
 			}
+			aMessages.add(message.getBytes());
 		}
 		return aMessages;		
 	}
@@ -151,7 +149,7 @@ public class ChatClientController {
 	/**
 	 * This method is used to receive a datagramPacket
 	 */
-	private DatagramPacket receiveDatagramPacket(){
+	public DatagramPacket receiveDatagramPacket(){
 		try (DatagramSocket udpSocket = new DatagramSocket()) {
 			
 			byte[] buffer = new byte[1024];
@@ -225,7 +223,12 @@ public boolean connect(String ip, int port, String nick) {
 	public boolean sendMessage(String message) {
 		
 		//ENTER YOUR CODE TO SEND A MESSAGE
-		
+//		ArrayList<byte[]> messagesToSend = divideMessage(message);
+//		String singleMessage;
+//		for (int i=0; i< messagesToSend.size(); i++){
+//			singleMessage= "108&"+this.chatReceiver.getNick()+"&"+messagesToSend.get(i)
+//		}
+//		String messageToSend= "108&"+this.chatReceiver.getNick()+"&"+message;
 		
 		return true;
 	}
