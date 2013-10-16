@@ -289,6 +289,23 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		JOptionPane.showMessageDialog(this, nick+" rejected establishing a conversation with you.");
 	}
 	
+	public void existentNick(){
+		JOptionPane.showMessageDialog(this, "The nick is already used.");
+	}
+	
+	public void connectionFailed(){
+		JOptionPane.showMessageDialog(this, "Connection failed.");
+	}
+	
+	public void alreadyChatting(String nick){
+		JOptionPane.showMessageDialog(this, nick+" is already chatting.");
+	}
+	
+	public void disconnectedB(String nick){
+		JOptionPane.showMessageDialog(this, nick+" is disconnected.");
+	}
+	
+	//public boolean 
 	@SuppressWarnings("deprecation")
 	public void blockUserList(Boolean block){
 		if (block==true){

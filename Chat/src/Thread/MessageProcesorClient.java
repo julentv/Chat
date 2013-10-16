@@ -70,10 +70,13 @@ public class MessageProcesorClient extends Thread{
 		}
 		return userList;
 	}
+	
+		
 	@Override
 	public void run() {
 		String returnMessage ="";
 		String numericalId;
+		String userList;
 		DatagramPacket receivedPacket= controller.receiveDatagramPacket();
 		
 		//Launch a new thread to continue receiving message while processing the first one.
@@ -84,11 +87,15 @@ public class MessageProcesorClient extends Thread{
 		returnMessage=receivedPacket.getData().toString();
 		numericalId= returnMessage.split("&")[0];
 		
+		System.out.println("numericalId"+numericalId);
 		switch (numericalId){
+		
 			case "201":
-				String users;
-				users=concatListOfUsers(returnMessage.substring(3));
-				window.refreshUserList(users);
+				
+				System.out.println("Dentro del switch"+numericalId);
+				userList=concatListOfUsers(returnMessage.substring(4).trim());
+				if (userList != null){
+				window.refreshUserList(userList);}
 				break;
 			case "202":
 				//Peticion recibida de A (202&nickA&nickMio)
@@ -104,7 +111,7 @@ public class MessageProcesorClient extends Thread{
 				break;
 			case "204":
 				//B ha rechazado ventana emergente 
-				window.conversationRejected(returnMessage.split("&")[1]);
+				window.conversationRejected(returnMessage.split("&")[1].trim());
 				break;
 			case "205":
 				//A ha cerrado la conversacion
@@ -117,26 +124,33 @@ public class MessageProcesorClient extends Thread{
 				//boton = Connect
 				break;
 			case "207":
-				//llamar metodo ConcatList(returnmessage)
+				
+				userList=concatListOfUsers(returnMessage.substring(4).trim());
+				if (userList != null){
+				window.refreshUserList(userList);}
 				break;
 			case "208":
 				//llamar metodo ConcatMessage(returnmessage)
 				break;
 			case "301":
 				//the nick already exists 
-				//mensaje en ventana emergente
+				window.existentNick();
 				break;
 			case "302":
 				//connection failed
-				//mensaje en ventana emergente
+				window.connectionFailed();
 				break;
 			case "303":
-				//b esta ya chateando
-				//mensaje en ventana emergente
+				//b already chatting				
+				window.alreadyChatting(returnMessage.split("&")[1].trim());
 				break;
 			case "304":
 				//B is disconnected and send list
-				//llamar método Concatlist(returnMessage)
+				window.disconnectedB(returnMessage.split("&")[1].trim());
+				
+				userList=concatListOfUsers(returnMessage.substring(4).trim());
+				if (userList != null){
+				window.refreshUserList(userList);}
 				break;
 			//default: throw new IncorrectMessageException("The message type code does not exist");
 		

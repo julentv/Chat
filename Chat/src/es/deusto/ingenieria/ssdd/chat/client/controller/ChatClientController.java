@@ -24,7 +24,7 @@ public class ChatClientController {
 	private static final int MESSAGE_MAX_LENGTH=1024;
 	public String incompletedListUsers=null;
 	public String incompletedMessage=null;
-	private DatagramSocket udpSocket;
+	public DatagramSocket udpSocket;
 	public ChatClientController() {
 		this.observable = new LocalObservable();
 		this.serverIP = null;
@@ -157,9 +157,9 @@ public class ChatClientController {
 			
 			byte[] buffer = new byte[1024];
 			DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
-			System.out.println("entra en receive");
 			udpSocket.receive(reply);	
-			System.out.println("recibidooo");
+			System.out.println(" - Received a request from '" + reply.getAddress().getHostAddress() + ":" + reply.getPort() + 
+	                   "' -> " + new String(reply.getData()));
 			
 			return reply;
 		} catch (SocketException e) {
@@ -181,28 +181,32 @@ public boolean connect(String ip, int port, String nick) {
 		try {
 			this.udpSocket= new DatagramSocket();
 			sendDatagramPacket(message);
-			System.out.println("pakete enviado: "+message);
+			
 			DatagramPacket receivedPacket= receiveDatagramPacket();
-			returnMessage=receivedPacket.getData().toString();
+			returnMessage=new String(receivedPacket.getData());
+			returnMessage=returnMessage.trim();
+			System.out.println("returnmessage= "+returnMessage);
+			if (returnMessage.split("&")[0].equals("201")){
+				this.connectedUser = new User();
+				this.connectedUser.setNick(nick);
+				if (returnMessage.charAt(returnMessage.length()-1)=='&'){
+					incompletedListUsers = returnMessage.substring(4);
+				}
+						
+				MessageProcesorClient messageProcesor = new MessageProcesorClient();
+				messageProcesor.start();
+				return true;
+			}
+			else{
+				return false;
+			}
 		} catch (SocketException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
-				
-		System.out.println("pakete recibido"+returnMessage);
-		if (returnMessage.split("&")[0].equals("201")){
-			this.connectedUser = new User();
-			this.connectedUser.setNick(nick);
-			incompletedListUsers = returnMessage.substring(4);
-			MessageProcesorClient messageProcesor = new MessageProcesorClient();
-			messageProcesor.start();
-			return true;
-		}
-		else{
 			return false;
 		}
 		
-		
+					
 	}
 	
 	public boolean disconnect() {
