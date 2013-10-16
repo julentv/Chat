@@ -24,6 +24,7 @@ public class ChatClientController {
 	private static final int MESSAGE_MAX_LENGTH=1024;
 	public String incompletedListUsers=null;
 	public String incompletedMessage=null;
+	private DatagramSocket udpSocket;
 	public ChatClientController() {
 		this.observable = new LocalObservable();
 		this.serverIP = null;
@@ -135,7 +136,7 @@ public class ChatClientController {
 	
 	//Método que envía un paquete
 	public void sendDatagramPacket(String message){
-		try (DatagramSocket udpSocket = new DatagramSocket()) {
+		try  {
 			InetAddress serverHost = InetAddress.getByName(this.serverIP);	
 			byte[] byteMsg = message.getBytes();
 			DatagramPacket request = new DatagramPacket(byteMsg, byteMsg.length, serverHost, this.serverPort);
@@ -152,11 +153,13 @@ public class ChatClientController {
 	 * This method is used to receive a datagramPacket
 	 */
 	public DatagramPacket receiveDatagramPacket(){
-		try (DatagramSocket udpSocket = new DatagramSocket()) {
+		try  {
 			
 			byte[] buffer = new byte[1024];
 			DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
-			udpSocket.receive(reply);			
+			System.out.println("entra en receive");
+			udpSocket.receive(reply);	
+			System.out.println("recibidooo");
 			
 			return reply;
 		} catch (SocketException e) {
@@ -175,13 +178,22 @@ public boolean connect(String ip, int port, String nick) {
 		//ENTER YOUR CODE TO CONNECT
 		this.serverIP = ip;
 		this.serverPort = port;
-		sendDatagramPacket(message);
-		DatagramPacket receivedPacket= receiveDatagramPacket();
-		returnMessage=receivedPacket.getData().toString();
+		try {
+			this.udpSocket= new DatagramSocket();
+			sendDatagramPacket(message);
+			System.out.println("pakete enviado: "+message);
+			DatagramPacket receivedPacket= receiveDatagramPacket();
+			returnMessage=receivedPacket.getData().toString();
+		} catch (SocketException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+				
+		System.out.println("pakete recibido"+returnMessage);
 		if (returnMessage.split("&")[0].equals("201")){
 			this.connectedUser = new User();
 			this.connectedUser.setNick(nick);
-			incompletedListUsers = returnMessage.substring(3);
+			incompletedListUsers = returnMessage.substring(4);
 			MessageProcesorClient messageProcesor = new MessageProcesorClient();
 			messageProcesor.start();
 			return true;
