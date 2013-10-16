@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observer;
 
+import Thread.MessageProcesorClient;
+
 import es.deusto.ingenieria.ssdd.util.observer.local.LocalObservable;
 import es.deusto.ingenieria.ssdd.chat.data.User;
 
@@ -176,11 +178,12 @@ public boolean connect(String ip, int port, String nick) {
 		sendDatagramPacket(message);
 		DatagramPacket receivedPacket= receiveDatagramPacket();
 		returnMessage=receivedPacket.getData().toString();
-		if (returnMessage.split("&")[0].equals("101")){
+		if (returnMessage.split("&")[0].equals("201")){
 			this.connectedUser = new User();
 			this.connectedUser.setNick(nick);
-			//crear clase k herede de Thread implement run (meter receive, ejecutar otro new run, 
-			//y procesar mensaje
+			incompletedListUsers = returnMessage.substring(3);
+			MessageProcesorClient messageProcesor = new MessageProcesorClient();
+			messageProcesor.start();
 			return true;
 		}
 		else{
@@ -212,10 +215,8 @@ public boolean connect(String ip, int port, String nick) {
 		ArrayList<String> connectedUsers = new ArrayList<>();
 		String message="107";
 		sendDatagramPacket(message);
-		//DatagramPacket receivedPacket= receiveDatagramPacket();
-		//receivedPacket.getData().toString();
-		//ENTER YOUR CODE TO OBTAIN THE LIST OF CONNECTED USERS
-		connectedUsers.add("Default");
+		
+		//connectedUsers.add("Default");
 		
 		return connectedUsers;
 	}
