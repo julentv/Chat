@@ -101,13 +101,16 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		
 		txtFieldServerIP = new JTextField();
 		txtFieldServerIP.setColumns(10);
+		txtFieldServerIP.setText("127.0.0.1");
 		txtFieldServerPort = new JTextField();
 		txtFieldServerPort.setColumns(10);
+		txtFieldServerPort.setText("6789");
 		
 		JLabel lblNick = new JLabel("Nick:");
 		
 		txtFieldNick = new JTextField();
 		txtFieldNick.setColumns(10);
+		txtFieldNick.setText("aaa");
 		
 		btnConnect = new JButton("Connect");
 		btnConnect.addActionListener(new ActionListener() {
