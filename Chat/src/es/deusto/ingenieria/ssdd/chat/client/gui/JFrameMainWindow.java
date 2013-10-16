@@ -52,6 +52,7 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	private JTextPane textAreaHistory;
 	private JTextArea textAreaSendMsg;
 	private JButton btnSendMsg;
+	private JButton btnReloadListOfUsers;
 	private SimpleDateFormat textFormatter = new SimpleDateFormat("HH:mm:ss");
 	
 	private ChatClientController controller;	
@@ -184,6 +185,14 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		btnSendMsg.setEnabled(false);
 		panelSendMsg.add(btnSendMsg, BorderLayout.EAST);
 		
+		//========================================================================
+		//Añadido por mi (boton de actualizar)
+		btnReloadListOfUsers = new JButton("Reload");
+		btnReloadListOfUsers.setEnabled(false);
+		btnReloadListOfUsers.setToolTipText("Reload list of ussers");
+		panelSendMsg.add(btnReloadListOfUsers, BorderLayout.EAST);
+		//========================================================================
+		
 		textAreaSendMsg = new JTextArea();
 		textAreaSendMsg.setTabSize(3);
 		textAreaSendMsg.setRows(4);
@@ -194,7 +203,24 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		panelSendMsg.add(scrollPaneNewMsg, BorderLayout.CENTER);		
 	}
 	
+	/**
+	 * This method refresh the list of connected users
+	 * @param allUsers list of connected users separated by &
+	 */
+	public void refreshUserList(String allUsers){
+		String[] users = allUsers.split("&");
+		
+		if (users.length==0) {
+			DefaultListModel<String> listModel = new DefaultListModel<>();
+			
+			for (String user : users) {
+				listModel.addElement(user);
+			}
+			this.listUsers.setModel(listModel);
+		}
+	}
 	private void btnConnectClick() {
+
 		if (!this.controller.isConnected()) {
 			if (this.txtFieldServerIP.getText().trim().isEmpty() ||
 				this.txtFieldServerIP.getText().trim().isEmpty() ||
@@ -256,6 +282,19 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		}
 	}
 	
+	public void conversationRejected(String nick){
+		JOptionPane.showMessageDialog(this, nick+" rejected establishing a conversation with you.");
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void blockUserList(Boolean block){
+		if (block==true){
+			this.listUsers.enable(true);
+		}
+		else{
+			this.listUsers.enable(false);
+		}
+	}
 	private void selectUser() {
 		if (this.listUsers.getSelectedIndex() != -1 && this.controller.getConnectedUser() != null) {		
 			//Send chat Request
