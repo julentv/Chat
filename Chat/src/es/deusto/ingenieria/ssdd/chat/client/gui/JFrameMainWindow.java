@@ -211,9 +211,16 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	 * @param allUsers list of connected users separated by &
 	 */
 	public void refreshUserList(String allUsers){
+		System.out.println(allUsers);
+		if (allUsers.contains("&")){
+			//hacer split
+		}
+		else{
+			//solo un usuario , no split xk no existe &
+		}
 		String[] users = allUsers.split("&");
-		
-		if (users.length==0) {
+		System.out.println(users[0]);
+		if (users.length!=0) {
 			DefaultListModel<String> listModel = new DefaultListModel<>();
 			
 			for (String user : users) {
@@ -237,31 +244,39 @@ public class JFrameMainWindow extends JFrame implements Observer {
 			if (this.controller.connect(this.txtFieldServerIP.getText(),
 					                    Integer.parseInt(this.txtFieldServerPort.getText()),
 					                    this.txtFieldNick.getText())) {
-				
+				this.txtFieldServerIP.setEditable(false);
+				this.txtFieldServerPort.setEditable(false);
+				this.txtFieldNick.setEditable(false);
+				this.btnConnect.setText("Disconnect");
+				this.btnSendMsg.setEnabled(true);
+				this.textAreaHistory.setText("");
+				this.textAreaSendMsg.setText("");
+//				
+//				this.setTitle("Chat main window - 'Connected'");
 				//Obtain the list of connected Users
-				List<String> connectedUsers = this.controller.getConnectedUsers();
-				
-				if (!connectedUsers.isEmpty()) {
-					DefaultListModel<String> listModel = new DefaultListModel<>();
-					
-					for (String user : connectedUsers) {
-						listModel.addElement(user);
-					}
-					
-					this.listUsers.setModel(listModel);
-					
-					this.txtFieldServerIP.setEditable(false);
-					this.txtFieldServerPort.setEditable(false);
-					this.txtFieldNick.setEditable(false);
-					this.btnConnect.setText("Disconnect");
-					this.btnSendMsg.setEnabled(true);
-					this.textAreaHistory.setText("");
-					this.textAreaSendMsg.setText("");
-					
-					this.setTitle("Chat main window - 'Connected'");
-				} else {
-					JOptionPane.showMessageDialog(this, "No clients are connected.", "Chat initialization error", JOptionPane.WARNING_MESSAGE);					
-				}			
+//				List<String> connectedUsers = this.controller.getConnectedUsers();
+//				
+//				if (!connectedUsers.isEmpty()) {
+//					DefaultListModel<String> listModel = new DefaultListModel<>();
+//					
+//					for (String user : connectedUsers) {
+//						listModel.addElement(user);
+//					}
+//					
+//					this.listUsers.setModel(listModel);
+//					
+//					this.txtFieldServerIP.setEditable(false);
+//					this.txtFieldServerPort.setEditable(false);
+//					this.txtFieldNick.setEditable(false);
+//					this.btnConnect.setText("Disconnect");
+//					this.btnSendMsg.setEnabled(true);
+//					this.textAreaHistory.setText("");
+//					this.textAreaSendMsg.setText("");
+//					
+//					this.setTitle("Chat main window - 'Connected'");
+//				} else {
+//					JOptionPane.showMessageDialog(this, "No clients are connected.", "Chat initialization error", JOptionPane.WARNING_MESSAGE);					
+//				}			
 			} else {
 				JOptionPane.showMessageDialog(this, "Can't connect to the server.", "Connection error", JOptionPane.ERROR_MESSAGE);
 			}

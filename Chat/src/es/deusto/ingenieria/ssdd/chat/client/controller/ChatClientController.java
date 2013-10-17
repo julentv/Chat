@@ -13,6 +13,7 @@ import java.util.Observer;
 import Thread.MessageProcesorClient;
 
 import es.deusto.ingenieria.ssdd.util.observer.local.LocalObservable;
+import es.deusto.ingenieria.ssdd.chat.client.gui.JFrameMainWindow;
 import es.deusto.ingenieria.ssdd.chat.data.User;
 
 public class ChatClientController {
@@ -25,6 +26,9 @@ public class ChatClientController {
 	public String incompletedListUsers=null;
 	public String incompletedMessage=null;
 	public DatagramSocket udpSocket;
+	private JFrameMainWindow window ;
+	
+	
 	public ChatClientController() {
 		this.observable = new LocalObservable();
 		this.serverIP = null;
@@ -191,6 +195,11 @@ public boolean connect(String ip, int port, String nick) {
 				this.connectedUser.setNick(nick);
 				if (returnMessage.charAt(returnMessage.length()-1)=='&'){
 					incompletedListUsers = returnMessage.substring(4);
+					System.out.println("acaba en &");
+				}
+				else{
+					System.out.println(returnMessage.substring(4));
+					window.refreshUserList(returnMessage.substring(4));
 				}
 						
 				MessageProcesorClient messageProcesor = new MessageProcesorClient();
