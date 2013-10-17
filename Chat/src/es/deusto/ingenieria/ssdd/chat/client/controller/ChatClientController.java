@@ -26,7 +26,6 @@ public class ChatClientController {
 	public String incompletedListUsers=null;
 	public String incompletedMessage=null;
 	public DatagramSocket udpSocket;
-	private JFrameMainWindow window ;
 	
 	
 	public ChatClientController() {
@@ -175,7 +174,7 @@ public class ChatClientController {
 		return null;
 	}
 	
-public boolean connect(String ip, int port, String nick) {
+public String connect(String ip, int port, String nick) {
 		
 		String message = "101&"+nick;
 		String returnMessage ="";
@@ -196,23 +195,27 @@ public boolean connect(String ip, int port, String nick) {
 				if (returnMessage.charAt(returnMessage.length()-1)=='&'){
 					incompletedListUsers = returnMessage.substring(4);
 					System.out.println("acaba en &");
+					MessageProcesorClient messageProcesor = new MessageProcesorClient();
+					messageProcesor.start();
+					return "";
 				}
 				else{
 					System.out.println(returnMessage.substring(4));
-					window.refreshUserList(returnMessage.substring(4));
+					
+					MessageProcesorClient messageProcesor = new MessageProcesorClient();
+					messageProcesor.start();
+					return returnMessage.substring(4);
 				}
 						
-				MessageProcesorClient messageProcesor = new MessageProcesorClient();
-				messageProcesor.start();
-				return true;
+				
 			}
 			else{
-				return false;
+				return null;
 			}
 		} catch (SocketException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-			return false;
+			return null;
 		}
 		
 					

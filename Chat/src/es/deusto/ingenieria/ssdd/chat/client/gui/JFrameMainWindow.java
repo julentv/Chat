@@ -241,9 +241,8 @@ public class JFrameMainWindow extends JFrame implements Observer {
 			}
 			
 			//Connect to the server
-			if (this.controller.connect(this.txtFieldServerIP.getText(),
-					                    Integer.parseInt(this.txtFieldServerPort.getText()),
-					                    this.txtFieldNick.getText())) {
+			String listaDeUsuarios=this.controller.connect(this.txtFieldServerIP.getText(),Integer.parseInt(this.txtFieldServerPort.getText()),this.txtFieldNick.getText());
+			if (listaDeUsuarios!=null) {
 				this.txtFieldServerIP.setEditable(false);
 				this.txtFieldServerPort.setEditable(false);
 				this.txtFieldNick.setEditable(false);
@@ -251,6 +250,7 @@ public class JFrameMainWindow extends JFrame implements Observer {
 				this.btnSendMsg.setEnabled(true);
 				this.textAreaHistory.setText("");
 				this.textAreaSendMsg.setText("");
+				refreshUserList(listaDeUsuarios);
 //				
 //				this.setTitle("Chat main window - 'Connected'");
 				//Obtain the list of connected Users
