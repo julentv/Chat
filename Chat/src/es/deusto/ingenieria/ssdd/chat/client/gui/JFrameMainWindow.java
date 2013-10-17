@@ -293,6 +293,10 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		JOptionPane.showMessageDialog(this, "The nick is already used.");
 	}
 	
+	public void disconnectionSuccessful(){
+		JOptionPane.showMessageDialog(this, "Disconnection successful.");
+	}
+	
 	public void connectionFailed(){
 		JOptionPane.showMessageDialog(this, "Connection failed.");
 	}
@@ -303,6 +307,18 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	
 	public void disconnectedB(String nick){
 		JOptionPane.showMessageDialog(this, nick+" is disconnected.");
+	}
+	
+	public boolean acceptChatInvitation(String nick){
+		int result = JOptionPane.showConfirmDialog(this, "Do you want to start a new chat session with '" + nick + "'", "Open chat Session", JOptionPane.YES_NO_OPTION);
+	if (result==JOptionPane.OK_OPTION){
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	
 	}
 	
 	//public boolean 
@@ -355,7 +371,7 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	
 
 	
-	private void appendReceivedMessageToHistory(String message, String user, long timestamp) {		
+	public void appendReceivedMessageToHistory(String message, String user, long timestamp) {		
 		String time = textFormatter.format(new Date(timestamp));		
 		String newMessage = " " + time + " - [" + user + "]: " + message.trim() + "\n";
 		SimpleAttributeSet attrs = new SimpleAttributeSet();

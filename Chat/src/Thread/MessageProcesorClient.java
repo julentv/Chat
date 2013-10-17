@@ -19,13 +19,15 @@ public class MessageProcesorClient extends Thread{
 	 * a whole message
 	 * @param message this is the message written by the client
 	 */
-	private void concatMessage(String message){
+	private String concatMessage(String message){
+		String mes= null;
 		if (controller.incompletedMessage==null){
 			if(message.charAt(message.length()-1)== '&'){
 				controller.incompletedMessage= message;
 			}
 			else{
 				//escribir en pantalla
+				mes= message;
 			}
 		}
 		else{
@@ -35,10 +37,11 @@ public class MessageProcesorClient extends Thread{
 			else{
 				controller.incompletedMessage= controller.incompletedMessage.concat(message);
 				//escribir en pantalla
+				mes= controller.incompletedMessage;
 				controller.incompletedMessage=null;
 			}
 		}
-		
+		return mes;
 	}
 	
 	/**
@@ -77,6 +80,7 @@ public class MessageProcesorClient extends Thread{
 		String returnMessage ="";
 		String numericalId;
 		String userList;
+		String message;
 		DatagramPacket receivedPacket= controller.receiveDatagramPacket();
 		
 		//Launch a new thread to continue receiving message while processing the first one.
@@ -99,12 +103,17 @@ public class MessageProcesorClient extends Thread{
 				break;
 			case "202":
 				//Peticion recibida de A (202&nickA&nickMio)
-				//mirar si hace click en si o en no en la ventana emergente
-				//si enviar 103&minick
-				//no enviar 104&minick
+				boolean acceptInvitation= window.acceptChatInvitation(returnMessage.split("&")[1].trim());
+				if (acceptInvitation){
+					controller.acceptChatRequest();
+				}
+				else{
+					controller.refuseChatRequest();
+				}
+				
 				break;
 			case "203":
-				//B ha aceptado (203)--desblokear texto para escribir
+				//B ha aceptado (203)
 				
 				//blokear resto de lista
 				window.blockUserList(true);
@@ -121,7 +130,7 @@ public class MessageProcesorClient extends Thread{
 				break;
 			case "206":
 				//Disconnection successfull
-				//boton = Connect
+				window.disconnectionSuccessful();
 				break;
 			case "207":
 				
@@ -131,6 +140,11 @@ public class MessageProcesorClient extends Thread{
 				break;
 			case "208":
 				//llamar metodo ConcatMessage(returnmessage)
+				message= concatMessage(returnMessage);
+				if (message!=null){
+					//escribir en ventana negra --sacar metodo de jframe
+					//window.appendReceivedMessageToHistory(message, new String("K"), "");
+				}
 				break;
 			case "301":
 				//the nick already exists 
