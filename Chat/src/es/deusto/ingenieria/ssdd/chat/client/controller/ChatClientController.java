@@ -28,6 +28,14 @@ public class ChatClientController {
 	public JFrameMainWindow mainWindow;
 	
 	
+	public JFrameMainWindow getMainWindow() {
+		return mainWindow;
+	}
+
+	public void setMainWindow(JFrameMainWindow mainWindow) {
+		this.mainWindow = mainWindow;
+	}
+
 	public ChatClientController() {
 		this.observable = new LocalObservable();
 		this.serverIP = null;

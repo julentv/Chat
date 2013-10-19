@@ -12,7 +12,6 @@ import es.deusto.ingenieria.ssdd.chat.exceptions.IncorrectMessageException;
 public class MessageProcesorClient extends Thread{
 
 	private ChatClientController controller;
-	private JFrameMainWindow window;
 	
 	public MessageProcesorClient(ChatClientController controller){
 		this.controller=controller;
@@ -93,6 +92,7 @@ public class MessageProcesorClient extends Thread{
 		
 		//Process the message
 		returnMessage=new String(receivedPacket.getData());
+		returnMessage=returnMessage.trim();
 		numericalId= returnMessage.split("&")[0];
 		
 		System.out.println("numericalId"+numericalId);

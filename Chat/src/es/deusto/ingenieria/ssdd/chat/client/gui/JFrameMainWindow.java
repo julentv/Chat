@@ -61,6 +61,7 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	 * Create the frame.
 	 */
 	public JFrameMainWindow(ChatClientController controller) {
+		controller.setMainWindow(this);
 		this.controller = controller;
 		//Add the frame as Observer of the Controller
 		this.controller.addLocalObserver(this);
