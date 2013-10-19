@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -86,10 +88,37 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		listUsers = new JList<>();
 		listUsers.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		listUsers.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		listUsers.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent arg0) {
+		listUsers.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
 				selectUser();
-			}			
+				
+			}
 		});
 		
 		panelUsers.add(listUsers);
@@ -348,17 +377,6 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	}
 	
 	}
-	
-	//public boolean 
-	@SuppressWarnings("deprecation")
-	public void blockUserList(Boolean block){
-		if (block==true){
-			this.listUsers.enable(true);
-		}
-		else{
-			this.listUsers.enable(false);
-		}
-	}
 	private void selectUser() {
 		if (this.listUsers.getSelectedIndex() != -1 && this.controller.getConnectedUser() != null) {		
 			//Send chat Request
@@ -386,14 +404,14 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	private void btnSendClick() {
 		if (!this.textAreaSendMsg.getText().trim().isEmpty()) {
 		
-			if (this.listUsers.getSelectedIndex() == -1) {				
-				JOptionPane.showMessageDialog(this, "You haven't select a destination user", "Chat initialization error", JOptionPane.ERROR_MESSAGE);				
+			if (this.controller.getChatReceiver()==null) {				
+				JOptionPane.showMessageDialog(this, "No chat started", "Chat initialization error", JOptionPane.ERROR_MESSAGE);				
 				
 				return;
-			}			
+			}	
 			
 			String message = this.textAreaSendMsg.getText().trim();
-			
+			appendMyMessageToHistory(message,this.controller.getConnectedUser(),new Date().getTime());
 			
 		}
 	}
@@ -402,38 +420,31 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	public void endConversationMessage(){
 		String time = textFormatter.format(new Date());		
 		String newMessage = " " + time + ": CONVERSATION FINISHED\n";
-		SimpleAttributeSet attrs = new SimpleAttributeSet();
-		StyleConstants.setBold(attrs, true);
-		StyleConstants.setForeground(attrs, Color.GREEN);		
-		
-		try {
-			this.textAreaHistory.getStyledDocument().insertString(this.textAreaHistory.getStyledDocument().getLength(), newMessage, attrs);
-		} catch (BadLocationException e) {
-			System.err.println("# Error updating message history: " + e.getMessage());
-		} 
+		appendMessageToHistory(newMessage, Color.GREEN); 
 	}
 	public void startConversationMessage(){
 		String time = textFormatter.format(new Date());		
 		String newMessage = " " + time + ": BEGINING OF THE CONVERSATION WITH ["+controller.getChatReceiver()+"]\n";
 		SimpleAttributeSet attrs = new SimpleAttributeSet();
-		StyleConstants.setBold(attrs, true);
-		StyleConstants.setForeground(attrs, Color.GREEN);		
-		
-		try {
-			this.textAreaHistory.getStyledDocument().insertString(this.textAreaHistory.getStyledDocument().getLength(), newMessage, attrs);
-		} catch (BadLocationException e) {
-			System.err.println("# Error updating message history: " + e.getMessage());
-		} 
+		appendMessageToHistory(newMessage, Color.GREEN); 
 	}
 	public void appendReceivedMessageToHistory(String message, String user, long timestamp) {		
 		String time = textFormatter.format(new Date(timestamp));		
 		String newMessage = " " + time + " - [" + user + "]: " + message.trim() + "\n";
+		appendMessageToHistory(newMessage, Color.MAGENTA); 
+	}
+	public void appendMyMessageToHistory(String message, String user, long timestamp) {		
+		String time = textFormatter.format(new Date(timestamp));		
+		String newMessage = " " + time + " - [" + user + "]: " + message.trim() + "\n";
+		appendMessageToHistory(newMessage, Color.BLUE); 
+	}
+	public void appendMessageToHistory(String message, Color color){
 		SimpleAttributeSet attrs = new SimpleAttributeSet();
 		StyleConstants.setBold(attrs, true);
-		StyleConstants.setForeground(attrs, Color.MAGENTA);		
+		StyleConstants.setForeground(attrs, color);		
 		
 		try {
-			this.textAreaHistory.getStyledDocument().insertString(this.textAreaHistory.getStyledDocument().getLength(), newMessage, attrs);
+			this.textAreaHistory.getStyledDocument().insertString(this.textAreaHistory.getStyledDocument().getLength(), message, attrs);
 		} catch (BadLocationException e) {
 			System.err.println("# Error updating message history: " + e.getMessage());
 		} 

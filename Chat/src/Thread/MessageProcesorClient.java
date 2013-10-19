@@ -110,7 +110,6 @@ public class MessageProcesorClient extends Thread{
 				boolean acceptInvitation= controller.mainWindow.acceptChatInvitation(receiverNick);
 				if (acceptInvitation){
 					controller.acceptChatRequest(receiverNick);
-					controller.mainWindow.blockUserList(true);
 					this.controller.mainWindow.startConversationMessage();
 				}
 				else{
@@ -121,7 +120,6 @@ public class MessageProcesorClient extends Thread{
 			case "203":
 				//B ha aceptado (203)
 				//blokear resto de lista
-				controller.mainWindow.blockUserList(true);
 				this.controller.mainWindow.startConversationMessage();
 				break;
 			case "204":
@@ -132,7 +130,8 @@ public class MessageProcesorClient extends Thread{
 			case "205":
 				//A ha cerrado la conversacion
 				//desblokear lista de usuarios
-				controller.mainWindow.blockUserList(false);
+				this.controller.setChatReceiver(null);
+				this.controller.mainWindow.endConversationMessage();
 				//limpiar ventana de texto
 				break;
 			case "206":
