@@ -166,10 +166,9 @@ public class ChatClientController {
 	
 	/**
 	 * This method is used to receive a datagramPacket
+	 * @throws IOException 
 	 */
-	public DatagramPacket receiveDatagramPacket(){
-		try  {
-			
+	public DatagramPacket receiveDatagramPacket() throws IOException{
 			byte[] buffer = new byte[1024];
 			DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
 			udpSocket.receive(reply);	
@@ -177,16 +176,9 @@ public class ChatClientController {
 	                   "' -> " + new String(reply.getData()));
 			
 			return reply;
-		} catch (SocketException e) {
-			System.err.println("# UDPClient Socket error: " + e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.err.println("# UDPClient IO error: " + e.getMessage());
-		}
-		return null;
 	}
 	
-public String connect(String ip, int port, String nick) {
+public String connect(String ip, int port, String nick) throws IOException {
 		
 		String message = "101&"+nick;
 		String returnMessage ="";
@@ -236,7 +228,6 @@ public String connect(String ip, int port, String nick) {
 		//ENTER YOUR CODE TO DISCONNECT
 		if (isChatSessionOpened()){
 			sendChatClosure();
-			 
 		}
 		
 		message= "106";
@@ -244,6 +235,7 @@ public String connect(String ip, int port, String nick) {
 		
 		this.connectedUser = null;
 		this.chatReceiver = null;
+		
 		
 		return true;
 	}

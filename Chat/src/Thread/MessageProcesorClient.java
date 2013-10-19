@@ -84,98 +84,102 @@ public class MessageProcesorClient extends Thread{
 		String numericalId;
 		String userList;
 		String message;
-		DatagramPacket receivedPacket= controller.receiveDatagramPacket();
-		
-		//Launch a new thread to continue receiving message while processing the first one.
-		MessageProcesorClient newThread = new MessageProcesorClient(controller);
-		newThread.start();
-		
-		//Process the message
-		returnMessage=new String(receivedPacket.getData());
-		returnMessage=returnMessage.trim();
-		numericalId= returnMessage.split("&")[0];
-		
-		System.out.println("numericalId"+numericalId);
-		switch (numericalId){
-		
-			case "201":
-				System.out.println("Dentro del switch"+numericalId);
-				userList=concatListOfUsers(returnMessage.substring(4).trim());
-				if (userList != null){
-				controller.mainWindow.refreshUserList(userList);}
-				break;
-			case "202":
-				//Peticion recibida de A (202&nickA&nickMio)
-				String receiverNick=returnMessage.split("&")[1].trim();
-				boolean acceptInvitation= controller.mainWindow.acceptChatInvitation(receiverNick);
-				if (acceptInvitation){
-					controller.acceptChatRequest(receiverNick);
+		DatagramPacket receivedPacket;
+		try {
+			receivedPacket = controller.receiveDatagramPacket();
+			//Launch a new thread to continue receiving message while processing the first one.
+			MessageProcesorClient newThread = new MessageProcesorClient(controller);
+			newThread.start();
+			
+			//Process the message
+			returnMessage=new String(receivedPacket.getData());
+			returnMessage=returnMessage.trim();
+			numericalId= returnMessage.split("&")[0];
+			
+			System.out.println("numericalId"+numericalId);
+			switch (numericalId){
+			
+				case "201":
+					System.out.println("Dentro del switch"+numericalId);
+					userList=concatListOfUsers(returnMessage.substring(4).trim());
+					if (userList != null){
+					controller.mainWindow.refreshUserList(userList);}
+					break;
+				case "202":
+					//Peticion recibida de A (202&nickA&nickMio)
+					String receiverNick=returnMessage.split("&")[1].trim();
+					boolean acceptInvitation= controller.mainWindow.acceptChatInvitation(receiverNick);
+					if (acceptInvitation){
+						controller.acceptChatRequest(receiverNick);
+						this.controller.mainWindow.startConversationMessage();
+					}
+					else{
+						controller.refuseChatRequest(receiverNick);
+					}
+					
+					break;
+				case "203":
+					//B ha aceptado (203)
+					//blokear resto de lista
 					this.controller.mainWindow.startConversationMessage();
-				}
-				else{
-					controller.refuseChatRequest(receiverNick);
-				}
-				
-				break;
-			case "203":
-				//B ha aceptado (203)
-				//blokear resto de lista
-				this.controller.mainWindow.startConversationMessage();
-				break;
-			case "204":
-				//B ha rechazado ventana emergente 
-				controller.mainWindow.conversationRejected();
-				this.controller.setChatReceiver(null);
-				break;
-			case "205":
-				//A ha cerrado la conversacion
-				//desblokear lista de usuarios
-				this.controller.setChatReceiver(null);
-				this.controller.mainWindow.endConversationMessage();
-				//limpiar ventana de texto
-				break;
-			case "206":
-				//Disconnection successfull
-				controller.mainWindow.disconnectionSuccessful();
-				break;
-			case "207":
-				userList=concatListOfUsers(returnMessage.substring(4).trim());
-				if (userList != null){
-				controller.mainWindow.refreshUserList(userList);}
-				break;
-			case "208":
-				//llamar metodo ConcatMessage(returnmessage)
-				message= concatMessage(returnMessage);
-				if (message!=null){
-					//escribir en ventana negra --sacar metodo de jframe
-					//controller.mainWindow.appendReceivedMessageToHistory(message, new String("K"), "");
-				}
-				break;
-			case "301":
-				//the nick already exists 
-				controller.mainWindow.existentNick();
-				break;
-			case "302":
-				//connection failed
-				controller.mainWindow.connectionFailed();
-				break;
-			case "303":
-				//b already chatting				
-				controller.mainWindow.alreadyChatting(returnMessage.split("&")[1].trim());
-				break;
-			case "304":
-				//B is disconnected and send list
-				controller.mainWindow.disconnectedB(returnMessage.split("&")[1].trim());
-				
-				userList=concatListOfUsers(returnMessage.substring(4).trim());
-				if (userList != null){
-				controller.mainWindow.refreshUserList(userList);}
-				break;
-			//default: throw new IncorrectMessageException("The message type code does not exist");
-		
+					break;
+				case "204":
+					//B ha rechazado ventana emergente 
+					controller.mainWindow.conversationRejected();
+					this.controller.setChatReceiver(null);
+					break;
+				case "205":
+					//A ha cerrado la conversacion
+					//desblokear lista de usuarios
+					this.controller.setChatReceiver(null);
+					this.controller.mainWindow.endConversationMessage();
+					//limpiar ventana de texto
+					break;
+				case "206":
+					//Disconnection successfull
+					controller.mainWindow.disconnectionSuccessful();
+					this.controller.udpSocket.close();
+					break;
+				case "207":
+					userList=concatListOfUsers(returnMessage.substring(4).trim());
+					if (userList != null){
+					controller.mainWindow.refreshUserList(userList);}
+					break;
+				case "208":
+					//llamar metodo ConcatMessage(returnmessage)
+					message= concatMessage(returnMessage);
+					if (message!=null){
+						//escribir en ventana negra --sacar metodo de jframe
+						//controller.mainWindow.appendReceivedMessageToHistory(message, new String("K"), "");
+					}
+					break;
+				case "301":
+					//the nick already exists 
+					controller.mainWindow.existentNick();
+					break;
+				case "302":
+					//connection failed
+					controller.mainWindow.connectionFailed();
+					break;
+				case "303":
+					//b already chatting				
+					controller.mainWindow.alreadyChatting(returnMessage.split("&")[1].trim());
+					break;
+				case "304":
+					//B is disconnected and send list
+					controller.mainWindow.disconnectedB(returnMessage.split("&")[1].trim());
+					
+					userList=concatListOfUsers(returnMessage.substring(4).trim());
+					if (userList != null){
+					controller.mainWindow.refreshUserList(userList);}
+					break;
+				//default: throw new IncorrectMessageException("The message type code does not exist");
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Hilo detenido. El socket podria estar cerrado");
 		}
-		
-		
 	}
 	
 	

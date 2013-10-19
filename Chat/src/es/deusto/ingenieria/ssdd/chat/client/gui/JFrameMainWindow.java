@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -281,61 +282,69 @@ public class JFrameMainWindow extends JFrame implements Observer {
 			}
 			
 			//Connect to the server
-			String listaDeUsuarios=this.controller.connect(this.txtFieldServerIP.getText(),Integer.parseInt(this.txtFieldServerPort.getText()),this.txtFieldNick.getText());
-			if (listaDeUsuarios!=null) {
-				this.txtFieldServerIP.setEditable(false);
-				this.txtFieldServerPort.setEditable(false);
-				this.txtFieldNick.setEditable(false);
-				this.btnConnect.setText("Disconnect");
-				this.btnSendMsg.setEnabled(true);
-				this.btnReloadListOfUsers.setEnabled(true);
-				this.textAreaHistory.setText("");
-				this.textAreaSendMsg.setText("");
-				refreshUserList(listaDeUsuarios);
-//				
-//				this.setTitle("Chat main window - 'Connected'");
-				//Obtain the list of connected Users
-//				List<String> connectedUsers = this.controller.getConnectedUsers();
-//				
-//				if (!connectedUsers.isEmpty()) {
-//					DefaultListModel<String> listModel = new DefaultListModel<>();
-//					
-//					for (String user : connectedUsers) {
-//						listModel.addElement(user);
-//					}
-//					
-//					this.listUsers.setModel(listModel);
-//					
-//					this.txtFieldServerIP.setEditable(false);
-//					this.txtFieldServerPort.setEditable(false);
-//					this.txtFieldNick.setEditable(false);
-//					this.btnConnect.setText("Disconnect");
-//					this.btnSendMsg.setEnabled(true);
-//					this.textAreaHistory.setText("");
-//					this.textAreaSendMsg.setText("");
+			String listaDeUsuarios;
+			try {
+				listaDeUsuarios = this.controller.connect(this.txtFieldServerIP.getText(),Integer.parseInt(this.txtFieldServerPort.getText()),this.txtFieldNick.getText());
+				if (listaDeUsuarios!=null) {
+					this.txtFieldServerIP.setEditable(false);
+					this.txtFieldServerPort.setEditable(false);
+					this.txtFieldNick.setEditable(false);
+					this.btnConnect.setText("Disconnect");
+					this.btnSendMsg.setEnabled(true);
+					this.btnReloadListOfUsers.setEnabled(true);
+					this.textAreaHistory.setText("");
+					this.textAreaSendMsg.setText("");
+					refreshUserList(listaDeUsuarios);
 //					
 //					this.setTitle("Chat main window - 'Connected'");
-//				} else {
-//					JOptionPane.showMessageDialog(this, "No clients are connected.", "Chat initialization error", JOptionPane.WARNING_MESSAGE);					
-//				}			
-			} else {
+					//Obtain the list of connected Users
+//					List<String> connectedUsers = this.controller.getConnectedUsers();
+//					
+//					if (!connectedUsers.isEmpty()) {
+//						DefaultListModel<String> listModel = new DefaultListModel<>();
+//						
+//						for (String user : connectedUsers) {
+//							listModel.addElement(user);
+//						}
+//						
+//						this.listUsers.setModel(listModel);
+//						
+//						this.txtFieldServerIP.setEditable(false);
+//						this.txtFieldServerPort.setEditable(false);
+//						this.txtFieldNick.setEditable(false);
+//						this.btnConnect.setText("Disconnect");
+//						this.btnSendMsg.setEnabled(true);
+//						this.textAreaHistory.setText("");
+//						this.textAreaSendMsg.setText("");
+//						
+//						this.setTitle("Chat main window - 'Connected'");
+//					} else {
+//						JOptionPane.showMessageDialog(this, "No clients are connected.", "Chat initialization error", JOptionPane.WARNING_MESSAGE);					
+//					}			
+				} else {
+					JOptionPane.showMessageDialog(this, "Can't connect to the server.", "Connection error", JOptionPane.ERROR_MESSAGE);
+				}
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this, "Can't connect to the server.", "Connection error", JOptionPane.ERROR_MESSAGE);
+			} catch (IOException e) {
 				JOptionPane.showMessageDialog(this, "Can't connect to the server.", "Connection error", JOptionPane.ERROR_MESSAGE);
 			}
+			
 		} else {
 			//Disconnect from the server
 			if (this.controller.disconnect()) {
-				this.txtFieldServerIP.setEditable(true);
-				this.txtFieldServerPort.setEditable(true);
-				this.txtFieldNick.setEditable(true);
-				this.listUsers.setEnabled(true);
-				this.listUsers.clearSelection();
-				this.btnConnect.setText("Connect");
-				this.btnSendMsg.setEnabled(false);
-				this.btnReloadListOfUsers.setEnabled(false);
-				this.textAreaHistory.setText("");
-				this.textAreaSendMsg.setText("");
-				
-				this.setTitle("Chat main window - 'Disconnected'");
+				//al metodo disconnectionSuccessful
+//				this.txtFieldServerIP.setEditable(true);
+//				this.txtFieldServerPort.setEditable(true);
+//				this.txtFieldNick.setEditable(true);
+//				this.listUsers.setEnabled(true);
+//				this.listUsers.clearSelection();
+//				this.btnConnect.setText("Connect");
+//				this.btnSendMsg.setEnabled(false);
+//				this.btnReloadListOfUsers.setEnabled(false);
+//				this.textAreaHistory.setText("");
+//				this.textAreaSendMsg.setText("");
+//				this.setTitle("Chat main window - 'Disconnected'");
 			} else {
 				JOptionPane.showMessageDialog(this, "Disconnection from the server fails.", "Disconnection error", JOptionPane.ERROR_MESSAGE);				
 			}
@@ -350,7 +359,20 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		JOptionPane.showMessageDialog(this, "The nick is already used.");
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public void disconnectionSuccessful(){
+		this.txtFieldServerIP.setEditable(true);
+		this.txtFieldServerPort.setEditable(true);
+		this.txtFieldNick.setEditable(true);
+		this.listUsers.setEnabled(true);
+		this.listUsers.clearSelection();
+		((DefaultListModel)this.listUsers.getModel()).removeAllElements();
+		this.btnConnect.setText("Connect");
+		this.btnSendMsg.setEnabled(false);
+		this.btnReloadListOfUsers.setEnabled(false);
+		this.textAreaHistory.setText("");
+		this.textAreaSendMsg.setText("");
+		this.setTitle("Chat main window - 'Disconnected'");
 		JOptionPane.showMessageDialog(this, "Disconnection successful.");
 	}
 	
@@ -411,6 +433,8 @@ public class JFrameMainWindow extends JFrame implements Observer {
 			}	
 			
 			String message = this.textAreaSendMsg.getText().trim();
+			//envío del mensaje
+			
 			appendMyMessageToHistory(message,this.controller.getConnectedUser(),new Date().getTime());
 			
 		}
