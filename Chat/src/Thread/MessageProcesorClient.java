@@ -14,6 +14,10 @@ public class MessageProcesorClient extends Thread{
 	private ChatClientController controller;
 	private JFrameMainWindow window;
 	
+	public MessageProcesorClient(ChatClientController controller){
+		this.controller=controller;
+	}
+	
 	/**
 	 * This method concat the split messages that corresponds to 
 	 * a whole message
@@ -84,26 +88,25 @@ public class MessageProcesorClient extends Thread{
 		DatagramPacket receivedPacket= controller.receiveDatagramPacket();
 		
 		//Launch a new thread to continue receiving message while processing the first one.
-		MessageProcesorClient newThread = new MessageProcesorClient();
+		MessageProcesorClient newThread = new MessageProcesorClient(controller);
 		newThread.start();
 		
 		//Process the message
-		returnMessage=receivedPacket.getData().toString();
+		returnMessage=new String(receivedPacket.getData());
 		numericalId= returnMessage.split("&")[0];
 		
 		System.out.println("numericalId"+numericalId);
 		switch (numericalId){
 		
 			case "201":
-				
 				System.out.println("Dentro del switch"+numericalId);
 				userList=concatListOfUsers(returnMessage.substring(4).trim());
 				if (userList != null){
-				window.refreshUserList(userList);}
+				controller.mainWindow.refreshUserList(userList);}
 				break;
 			case "202":
 				//Peticion recibida de A (202&nickA&nickMio)
-				boolean acceptInvitation= window.acceptChatInvitation(returnMessage.split("&")[1].trim());
+				boolean acceptInvitation= controller.mainWindow.acceptChatInvitation(returnMessage.split("&")[1].trim());
 				if (acceptInvitation){
 					controller.acceptChatRequest();
 				}
@@ -116,55 +119,54 @@ public class MessageProcesorClient extends Thread{
 				//B ha aceptado (203)
 				
 				//blokear resto de lista
-				window.blockUserList(true);
+				controller.mainWindow.blockUserList(true);
 				break;
 			case "204":
 				//B ha rechazado ventana emergente 
-				window.conversationRejected(returnMessage.split("&")[1].trim());
+				controller.mainWindow.conversationRejected(returnMessage.split("&")[1].trim());
 				break;
 			case "205":
 				//A ha cerrado la conversacion
 				//desblokear lista de usuarios
-				window.blockUserList(false);
+				controller.mainWindow.blockUserList(false);
 				//limpiar ventana de texto
 				break;
 			case "206":
 				//Disconnection successfull
-				window.disconnectionSuccessful();
+				controller.mainWindow.disconnectionSuccessful();
 				break;
 			case "207":
-				
 				userList=concatListOfUsers(returnMessage.substring(4).trim());
 				if (userList != null){
-				window.refreshUserList(userList);}
+				controller.mainWindow.refreshUserList(userList);}
 				break;
 			case "208":
 				//llamar metodo ConcatMessage(returnmessage)
 				message= concatMessage(returnMessage);
 				if (message!=null){
 					//escribir en ventana negra --sacar metodo de jframe
-					//window.appendReceivedMessageToHistory(message, new String("K"), "");
+					//controller.mainWindow.appendReceivedMessageToHistory(message, new String("K"), "");
 				}
 				break;
 			case "301":
 				//the nick already exists 
-				window.existentNick();
+				controller.mainWindow.existentNick();
 				break;
 			case "302":
 				//connection failed
-				window.connectionFailed();
+				controller.mainWindow.connectionFailed();
 				break;
 			case "303":
 				//b already chatting				
-				window.alreadyChatting(returnMessage.split("&")[1].trim());
+				controller.mainWindow.alreadyChatting(returnMessage.split("&")[1].trim());
 				break;
 			case "304":
 				//B is disconnected and send list
-				window.disconnectedB(returnMessage.split("&")[1].trim());
+				controller.mainWindow.disconnectedB(returnMessage.split("&")[1].trim());
 				
 				userList=concatListOfUsers(returnMessage.substring(4).trim());
 				if (userList != null){
-				window.refreshUserList(userList);}
+				controller.mainWindow.refreshUserList(userList);}
 				break;
 			//default: throw new IncorrectMessageException("The message type code does not exist");
 		

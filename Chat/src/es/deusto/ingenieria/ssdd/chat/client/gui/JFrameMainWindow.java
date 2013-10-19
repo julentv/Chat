@@ -173,6 +173,12 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		scrollPaneHistory.setViewportBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panelHistory.add(scrollPaneHistory);
 		
+		//==============================================================
+		//Añadido por mi (panel de botones
+		//JPanel panelButton = new JPanel();
+		//contentPane.add(panelSendMsg, BorderLayout.SOUTH);
+		//==============================================================
+		
 		JPanel panelSendMsg = new JPanel();
 		contentPane.add(panelSendMsg, BorderLayout.SOUTH);
 		panelSendMsg.setBorder(new TitledBorder(null, "New message", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -190,10 +196,15 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		
 		//========================================================================
 		//Añadido por mi (boton de actualizar)
-		btnReloadListOfUsers = new JButton("Reload");
+		btnReloadListOfUsers = new JButton("Reload list of users");
 		btnReloadListOfUsers.setEnabled(false);
 		btnReloadListOfUsers.setToolTipText("Reload list of ussers");
-		panelSendMsg.add(btnReloadListOfUsers, BorderLayout.EAST);
+		btnReloadListOfUsers.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				askForListOfUsers();
+			}
+		});
+		panelSendMsg.add(btnReloadListOfUsers, BorderLayout.NORTH);
 		//========================================================================
 		
 		textAreaSendMsg = new JTextArea();
@@ -211,7 +222,6 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	 * @param allUsers list of connected users separated by &
 	 */
 	public void refreshUserList(String allUsers){
-		System.out.println(allUsers);
 		if (allUsers.contains("&")){
 			//hacer split
 		}
@@ -219,7 +229,6 @@ public class JFrameMainWindow extends JFrame implements Observer {
 			//solo un usuario , no split xk no existe &
 		}
 		String[] users = allUsers.split("&");
-		System.out.println(users[0]);
 		if (users.length!=0) {
 			DefaultListModel<String> listModel = new DefaultListModel<>();
 			
@@ -248,6 +257,7 @@ public class JFrameMainWindow extends JFrame implements Observer {
 				this.txtFieldNick.setEditable(false);
 				this.btnConnect.setText("Disconnect");
 				this.btnSendMsg.setEnabled(true);
+				this.btnReloadListOfUsers.setEnabled(true);
 				this.textAreaHistory.setText("");
 				this.textAreaSendMsg.setText("");
 				refreshUserList(listaDeUsuarios);
@@ -290,6 +300,7 @@ public class JFrameMainWindow extends JFrame implements Observer {
 				this.listUsers.clearSelection();
 				this.btnConnect.setText("Connect");
 				this.btnSendMsg.setEnabled(false);
+				this.btnReloadListOfUsers.setEnabled(false);
 				this.textAreaHistory.setText("");
 				this.textAreaSendMsg.setText("");
 				
@@ -414,5 +425,9 @@ public class JFrameMainWindow extends JFrame implements Observer {
 				}
 			}
 		}
-	}	
+	}
+	private void askForListOfUsers(){
+		System.out.println("Peticion de lista de usuarios");
+		this.controller.getConnectedUsers();
+	}
 }

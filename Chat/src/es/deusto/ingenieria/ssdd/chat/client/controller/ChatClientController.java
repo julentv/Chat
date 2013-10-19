@@ -7,7 +7,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Observer;
 
 import Thread.MessageProcesorClient;
@@ -26,6 +25,7 @@ public class ChatClientController {
 	public String incompletedListUsers=null;
 	public String incompletedMessage=null;
 	public DatagramSocket udpSocket;
+	public JFrameMainWindow mainWindow;
 	
 	
 	public ChatClientController() {
@@ -184,7 +184,7 @@ public String connect(String ip, int port, String nick) {
 		try {
 			this.udpSocket= new DatagramSocket();
 			sendDatagramPacket(message);
-			
+			System.out.println("A la espera");
 			DatagramPacket receivedPacket= receiveDatagramPacket();
 			returnMessage=new String(receivedPacket.getData());
 			returnMessage=returnMessage.trim();
@@ -195,19 +195,15 @@ public String connect(String ip, int port, String nick) {
 				if (returnMessage.charAt(returnMessage.length()-1)=='&'){
 					incompletedListUsers = returnMessage.substring(4);
 					System.out.println("acaba en &");
-					MessageProcesorClient messageProcesor = new MessageProcesorClient();
+					MessageProcesorClient messageProcesor = new MessageProcesorClient(this);
 					messageProcesor.start();
 					return "";
 				}
-				else{
-					System.out.println(returnMessage.substring(4));
-					
-					MessageProcesorClient messageProcesor = new MessageProcesorClient();
+				else{					
+					MessageProcesorClient messageProcesor = new MessageProcesorClient(this);
 					messageProcesor.start();
 					return returnMessage.substring(4);
 				}
-						
-				
 			}
 			else{
 				return null;
