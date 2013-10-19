@@ -106,9 +106,12 @@ public class MessageProcesorClient extends Thread{
 				break;
 			case "202":
 				//Peticion recibida de A (202&nickA&nickMio)
-				boolean acceptInvitation= controller.mainWindow.acceptChatInvitation(returnMessage.split("&")[1].trim());
+				String receiverNick=returnMessage.split("&")[1].trim();
+				boolean acceptInvitation= controller.mainWindow.acceptChatInvitation(receiverNick);
 				if (acceptInvitation){
-					controller.acceptChatRequest();
+					controller.acceptChatRequest(receiverNick);
+					controller.mainWindow.blockUserList(true);
+					this.controller.mainWindow.startConversationMessage();
 				}
 				else{
 					controller.refuseChatRequest();
@@ -117,9 +120,9 @@ public class MessageProcesorClient extends Thread{
 				break;
 			case "203":
 				//B ha aceptado (203)
-				
 				//blokear resto de lista
 				controller.mainWindow.blockUserList(true);
+				this.controller.mainWindow.startConversationMessage();
 				break;
 			case "204":
 				//B ha rechazado ventana emergente 

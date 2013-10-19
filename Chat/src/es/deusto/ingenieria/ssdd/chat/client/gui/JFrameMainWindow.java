@@ -375,7 +375,8 @@ public class JFrameMainWindow extends JFrame implements Observer {
 				int result = JOptionPane.showConfirmDialog(this, "Do you want to close your current chat session with '" + this.controller.getChatReceiver() + "'", "Close chat Session", JOptionPane.YES_NO_OPTION);				
 
 				if (result == JOptionPane.OK_OPTION && this.controller.sendChatClosure()) {
-					this.listUsers.clearSelection();					
+					this.listUsers.clearSelection();
+					this.endConversationMessage();
 					this.setTitle("Chat main window - 'Connected'");
 				}
 			}
@@ -398,7 +399,32 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	}
 	
 
-	
+	public void endConversationMessage(){
+		String time = textFormatter.format(new Date());		
+		String newMessage = " " + time + ": CONVERSATION FINISHED\n";
+		SimpleAttributeSet attrs = new SimpleAttributeSet();
+		StyleConstants.setBold(attrs, true);
+		StyleConstants.setForeground(attrs, Color.GREEN);		
+		
+		try {
+			this.textAreaHistory.getStyledDocument().insertString(this.textAreaHistory.getStyledDocument().getLength(), newMessage, attrs);
+		} catch (BadLocationException e) {
+			System.err.println("# Error updating message history: " + e.getMessage());
+		} 
+	}
+	public void startConversationMessage(){
+		String time = textFormatter.format(new Date());		
+		String newMessage = " " + time + ": BEGINING OF THE CONVERSATION WITH ["+controller.getChatReceiver()+"]\n";
+		SimpleAttributeSet attrs = new SimpleAttributeSet();
+		StyleConstants.setBold(attrs, true);
+		StyleConstants.setForeground(attrs, Color.GREEN);		
+		
+		try {
+			this.textAreaHistory.getStyledDocument().insertString(this.textAreaHistory.getStyledDocument().getLength(), newMessage, attrs);
+		} catch (BadLocationException e) {
+			System.err.println("# Error updating message history: " + e.getMessage());
+		} 
+	}
 	public void appendReceivedMessageToHistory(String message, String user, long timestamp) {		
 		String time = textFormatter.format(new Date(timestamp));		
 		String newMessage = " " + time + " - [" + user + "]: " + message.trim() + "\n";

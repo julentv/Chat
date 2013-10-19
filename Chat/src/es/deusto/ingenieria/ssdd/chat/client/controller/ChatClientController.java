@@ -214,6 +214,7 @@ public String connect(String ip, int port, String nick) {
 				}
 			}
 			else{
+				this.udpSocket.close();
 				return null;
 			}
 		} catch (SocketException e1) {
@@ -296,10 +297,12 @@ public String connect(String ip, int port, String nick) {
 		this.observable.notifyObservers(message);
 	}
 	
-	public boolean acceptChatRequest() {
+	public boolean acceptChatRequest(String nickToAccept) {
 		
 		//ENTER YOUR CODE TO ACCEPT A CHAT REQUEST
-		String message= "103&"+this.connectedUser.getNick();
+		this.chatReceiver=new User();
+		this.chatReceiver.setNick(nickToAccept);
+		String message= "103&"+this.chatReceiver.getNick();
 		sendDatagramPacket(message);
 		return true;
 	}
