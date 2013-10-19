@@ -234,6 +234,7 @@ public class JFrameMainWindow extends JFrame implements Observer {
 			DefaultListModel<String> listModel = new DefaultListModel<>();
 			
 			for (String user : users) {
+				if(!user.equals(controller.getConnectedUser()))
 				listModel.addElement(user);
 			}
 			this.listUsers.setModel(listModel);
