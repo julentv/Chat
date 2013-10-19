@@ -313,8 +313,8 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		}
 	}
 	
-	public void conversationRejected(String nick){
-		JOptionPane.showMessageDialog(this, nick+" rejected establishing a conversation with you.");
+	public void conversationRejected(){
+		JOptionPane.showMessageDialog(this, this.controller.getChatReceiver()+" rejected establishing a conversation with you.");
 	}
 	
 	public void existentNick(){

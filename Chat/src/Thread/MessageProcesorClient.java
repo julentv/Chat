@@ -114,7 +114,7 @@ public class MessageProcesorClient extends Thread{
 					this.controller.mainWindow.startConversationMessage();
 				}
 				else{
-					controller.refuseChatRequest();
+					controller.refuseChatRequest(receiverNick);
 				}
 				
 				break;
@@ -126,7 +126,8 @@ public class MessageProcesorClient extends Thread{
 				break;
 			case "204":
 				//B ha rechazado ventana emergente 
-				controller.mainWindow.conversationRejected(returnMessage.split("&")[1].trim());
+				controller.mainWindow.conversationRejected();
+				this.controller.setChatReceiver(null);
 				break;
 			case "205":
 				//A ha cerrado la conversacion

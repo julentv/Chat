@@ -20,6 +20,10 @@ public class ChatClientController {
 	private int serverPort;
 	private User connectedUser;
 	private User chatReceiver;
+	public void setChatReceiver(User chatReceiver) {
+		this.chatReceiver = chatReceiver;
+	}
+
 	private LocalObservable observable;
 	private static final int MESSAGE_MAX_LENGTH=1024;
 	public String incompletedListUsers=null;
@@ -307,10 +311,10 @@ public String connect(String ip, int port, String nick) {
 		return true;
 	}
 	
-	public boolean refuseChatRequest() {
+	public boolean refuseChatRequest(String nickToRefuse) {
 		
 		//ENTER YOUR CODE TO REFUSE A CHAT REQUEST
-		String message= "104&"+this.connectedUser.getNick();
+		String message= "104&"+nickToRefuse;
 		sendDatagramPacket(message);
 		return true;
 	}	
