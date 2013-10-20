@@ -9,10 +9,10 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Observer;
 
-import Thread.MessageProcesorClient;
 
 import es.deusto.ingenieria.ssdd.util.observer.local.LocalObservable;
 import es.deusto.ingenieria.ssdd.chat.client.gui.JFrameMainWindow;
+import es.deusto.ingenieria.ssdd.chat.client.thread.MessageProcesorClient;
 import es.deusto.ingenieria.ssdd.chat.data.User;
 
 public class ChatClientController {
@@ -239,7 +239,10 @@ public String connect(String ip, int port, String nick) throws IOException {
 		
 		return true;
 	}
-	
+	public void sendAlreadyChatting(String nickTo){
+		String message="303&"+nickTo;
+		sendDatagramPacket(message);
+	}
 	public ArrayList<String> getConnectedUsers() {
 		ArrayList<String> connectedUsers = new ArrayList<>();
 		String message="107";

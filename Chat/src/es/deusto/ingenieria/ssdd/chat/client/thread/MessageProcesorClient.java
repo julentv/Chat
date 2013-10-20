@@ -1,4 +1,4 @@
-package Thread;
+package es.deusto.ingenieria.ssdd.chat.client.thread;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -108,13 +108,18 @@ public class MessageProcesorClient extends Thread{
 				case "202":
 					//Peticion recibida de A (202&nickA&nickMio)
 					String receiverNick=returnMessage.split("&")[1].trim();
-					boolean acceptInvitation= controller.mainWindow.acceptChatInvitation(receiverNick);
-					if (acceptInvitation){
-						controller.acceptChatRequest(receiverNick);
-						this.controller.mainWindow.startConversationMessage();
-					}
-					else{
-						controller.refuseChatRequest(receiverNick);
+					if(this.controller.getChatReceiver()==null){
+						boolean acceptInvitation= controller.mainWindow.acceptChatInvitation(receiverNick);
+						if (acceptInvitation){
+							controller.acceptChatRequest(receiverNick);
+							this.controller.mainWindow.startConversationMessage();
+						}
+						else{
+							controller.refuseChatRequest(receiverNick);
+						}
+					}else{
+						//the user is already chatting. Notify the server
+						this.controller.sendAlreadyChatting(receiverNick);
 					}
 					
 					break;
@@ -162,8 +167,9 @@ public class MessageProcesorClient extends Thread{
 					controller.mainWindow.connectionFailed();
 					break;
 				case "303":
-					//b already chatting				
-					controller.mainWindow.alreadyChatting(returnMessage.split("&")[1].trim());
+					//b already chatting
+					controller.mainWindow.alreadyChatting(controller.getChatReceiver());
+					this.controller.setChatReceiver(null);
 					break;
 				case "304":
 					//B is disconnected and send list
