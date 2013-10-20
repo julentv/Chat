@@ -26,19 +26,19 @@ public class MessageProcesorClient extends Thread{
 		String mes= null;
 		if (controller.incompletedMessage==null){
 			if(message.charAt(message.length()-1)== '&'){
-				controller.incompletedMessage= message;
+				controller.incompletedMessage= message.split("&")[2];
 			}
 			else{
 				//escribir en pantalla
-				mes= message;
+				mes= message.split("&")[2];
 			}
 		}
 		else{
 			if(message.charAt(message.length()-1)=='&'){
-				controller.incompletedMessage= controller.incompletedMessage.concat(message);
+				controller.incompletedMessage= controller.incompletedMessage.concat(message.split("&")[2]);
 			}
 			else{
-				controller.incompletedMessage= controller.incompletedMessage.concat(message);
+				controller.incompletedMessage= controller.incompletedMessage.concat(message.split("&")[2]);
 				//escribir en pantalla
 				mes= controller.incompletedMessage;
 				controller.incompletedMessage=null;
@@ -154,8 +154,7 @@ public class MessageProcesorClient extends Thread{
 					//llamar metodo ConcatMessage(returnmessage)
 					message= concatMessage(returnMessage);
 					if (message!=null){
-						//escribir en ventana negra --sacar metodo de jframe
-						//controller.mainWindow.appendReceivedMessageToHistory(message, new String("K"), "");
+						this.controller.receiveMessage(message);
 					}
 					break;
 				case "301":
@@ -174,17 +173,15 @@ public class MessageProcesorClient extends Thread{
 				case "304":
 					//B is disconnected and send list
 					controller.mainWindow.disconnectedB(returnMessage.split("&")[1].trim());
-					
+					this.controller.setChatReceiver(null);
 					userList=concatListOfUsers(returnMessage.substring(4).trim());
 					if (userList != null){
-					controller.mainWindow.refreshUserList(userList);}
+						controller.mainWindow.refreshUserList(userList);}
 					break;
 				//default: throw new IncorrectMessageException("The message type code does not exist");
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("Hilo detenido. El socket podria estar cerrado");
+			System.out.println("Hilo detenido.");
 		}
 	}
 	

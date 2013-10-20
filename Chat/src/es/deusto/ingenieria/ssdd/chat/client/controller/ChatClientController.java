@@ -1,12 +1,12 @@
 package es.deusto.ingenieria.ssdd.chat.client.controller;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Observable;
 import java.util.Observer;
 
 
@@ -15,7 +15,7 @@ import es.deusto.ingenieria.ssdd.chat.client.gui.JFrameMainWindow;
 import es.deusto.ingenieria.ssdd.chat.client.thread.MessageProcesorClient;
 import es.deusto.ingenieria.ssdd.chat.data.User;
 
-public class ChatClientController {
+public class ChatClientController{
 	private String serverIP;
 	private int serverPort;
 	private User connectedUser;
@@ -103,36 +103,6 @@ public class ChatClientController {
 		return numberOfMessages;
 	}
 	
-	private ArrayList <byte []> divideList (ArrayList <User> connectedUsers) throws IOException{
-		ArrayList <byte []> aMessages = new ArrayList<byte []>();
-		aMessages.add(new byte [0]);
-		int cont =0;
-		int arrayPosition=0;
-		String nick;
-		for (int i=0; i< connectedUsers.size(); i++){
-			nick= connectedUsers.get(i).getNick().concat("&");
-			cont += nick.getBytes().length;
-			
-			if(cont> MESSAGE_MAX_LENGTH){
-				arrayPosition++;
-				aMessages.add(nick.getBytes());
-				
-				cont=connectedUsers.get(i).toString().getBytes().length;
-			}
-			else
-			{
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
-				outputStream.write( aMessages.get(arrayPosition) );
-				outputStream.write( nick.getBytes() );
-								
-				aMessages.set(arrayPosition, outputStream.toByteArray( ));
-			}
-						
-		}
-			
-		return aMessages;
-	}
-	
 	
 	private ArrayList<byte[]> divideMessage (String completeMessage){
 		ArrayList<byte[]> aMessages = new ArrayList<byte[]>();
@@ -214,7 +184,6 @@ public String connect(String ip, int port, String nick) throws IOException {
 				return null;
 			}
 		} catch (SocketException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			return null;
 		}
@@ -256,22 +225,21 @@ public String connect(String ip, int port, String nick) throws IOException {
 	public boolean sendMessage(String message) {
 		
 		//ENTER YOUR CODE TO SEND A MESSAGE
-//		ArrayList<byte[]> messagesToSend = divideMessage(message);
-//		String singleMessage;
-//		for (int i=0; i< messagesToSend.size(); i++){
-//			singleMessage= "108&"+this.chatReceiver.getNick()+"&"+messagesToSend.get(i)
-//		}
-//		String messageToSend= "108&"+this.chatReceiver.getNick()+"&"+message;
+		String singleMessage;
+		String header="108&"+this.chatReceiver.getNick();
+		int dif=MESSAGE_MAX_LENGTH-header.length();
+		while(message.length()>dif){
+			singleMessage= header+"&"+message.substring(0,dif-1)+"&";
+			this.sendDatagramPacket(singleMessage);
+			message=message.substring(dif-1);
+		}
+		this.sendDatagramPacket(message);
 		
 		return true;
 	}
 	
-	public void receiveMessage() {
-		
-		//ENTER YOUR CODE TO RECEIVE A MESSAGE
-		
-		String message = "Received message";		
-		
+	public void receiveMessage(String message) {
+				
 		//Notify the received message to the GUI
 		this.observable.notifyObservers(message);
 	}	

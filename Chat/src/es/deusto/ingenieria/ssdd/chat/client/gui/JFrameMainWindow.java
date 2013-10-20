@@ -93,25 +93,21 @@ public class JFrameMainWindow extends JFrame implements Observer {
 			
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 				
 			}
 			
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 				
 			}
 			
 			@Override
 			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 				
 			}
 			
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 				
 			}
 			
@@ -428,14 +424,15 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		
 			if (this.controller.getChatReceiver()==null) {				
 				JOptionPane.showMessageDialog(this, "No chat started", "Chat initialization error", JOptionPane.ERROR_MESSAGE);				
-				
 				return;
 			}	
 			
 			String message = this.textAreaSendMsg.getText().trim();
-			//envío del mensaje
 			
+			//envío del mensaje
+			controller.sendMessage("108&"+this.controller.getChatReceiver()+"&"+message);
 			appendMyMessageToHistory(message,this.controller.getConnectedUser(),new Date().getTime());
+			textAreaSendMsg.setText("");
 			
 		}
 	}
@@ -480,12 +477,10 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		//Update this method to process the request received from other users
 		
 		if (this.controller.isConnected()) {			
-			if (object.getClass().getName().equals(Message.class.getName())) {
-				Message newMessage = (Message) object;
-			
-				if (newMessage.getTo().getNick() == this.controller.getConnectedUser()) {
-					this.appendReceivedMessageToHistory(newMessage.getText(), newMessage.getFrom().getNick(), newMessage.getTimestamp());
-				}
+			if (object.getClass().getName().equals(String.class.getName())) {
+				String newMessage = (String) object;
+				this.appendReceivedMessageToHistory(newMessage, controller.getChatReceiver(), new Date().getTime());
+				
 			}
 		}
 	}
