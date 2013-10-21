@@ -172,7 +172,7 @@ public class MessageProcesorClient extends Thread{
 					break;
 				case "304":
 					//B is disconnected and send list
-					controller.mainWindow.disconnectedB(returnMessage.split("&")[1].trim());
+					controller.mainWindow.disconnectedB(this.controller.getChatReceiver());
 					this.controller.setChatReceiver(null);
 					userList=concatListOfUsers(returnMessage.substring(4).trim());
 					if (userList != null){

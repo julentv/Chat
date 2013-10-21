@@ -458,13 +458,8 @@ public class JFrameMainWindow extends JFrame implements Observer, WindowListener
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		if (this.controller.getConnectedUser()!=null) {
 			this.controller.disconnect();
 			System.exit(0);
-		} else {
-			JOptionPane.showMessageDialog(this, "Disconnection from the server fails.", "Disconnection error", JOptionPane.ERROR_MESSAGE);				
-		}
-		
 	}
 
 	@Override
