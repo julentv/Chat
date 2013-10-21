@@ -20,10 +20,6 @@ public class ChatClientController{
 	private int serverPort;
 	private User connectedUser;
 	private User chatReceiver;
-	public void setChatReceiver(User chatReceiver) {
-		this.chatReceiver = chatReceiver;
-	}
-
 	private LocalObservable observable;
 	private static final int MESSAGE_MAX_LENGTH=1024;
 	public String incompletedListUsers=null;
@@ -31,6 +27,9 @@ public class ChatClientController{
 	public DatagramSocket udpSocket;
 	public JFrameMainWindow mainWindow;
 	
+	public void setChatReceiver(User chatReceiver) {
+		this.chatReceiver = chatReceiver;
+	}
 	
 	public JFrameMainWindow getMainWindow() {
 		return mainWindow;
@@ -229,9 +228,10 @@ public String connect(String ip, int port, String nick) throws IOException {
 		String header="108&"+this.chatReceiver.getNick();
 		int dif=MESSAGE_MAX_LENGTH-header.length();
 		while(message.length()>dif){
-			singleMessage= header+"&"+message.substring(0,dif-1)+"&";
+			singleMessage= message.substring(0,dif-1)+"&";
 			this.sendDatagramPacket(singleMessage);
 			message=message.substring(dif-1);
+			message=header+"&"+message;
 		}
 		this.sendDatagramPacket(message);
 		

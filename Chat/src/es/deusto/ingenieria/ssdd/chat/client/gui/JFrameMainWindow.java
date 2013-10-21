@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,7 +45,7 @@ import javax.swing.text.StyleConstants;
 import es.deusto.ingenieria.ssdd.chat.client.controller.ChatClientController;
 import es.deusto.ingenieria.ssdd.chat.data.Message;
 
-public class JFrameMainWindow extends JFrame implements Observer {
+public class JFrameMainWindow extends JFrame implements Observer, WindowListener{
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -200,11 +202,6 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		scrollPaneHistory.setViewportBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panelHistory.add(scrollPaneHistory);
 		
-		//==============================================================
-		//Añadido por mi (panel de botones
-		//JPanel panelButton = new JPanel();
-		//contentPane.add(panelSendMsg, BorderLayout.SOUTH);
-		//==============================================================
 		
 		JPanel panelSendMsg = new JPanel();
 		contentPane.add(panelSendMsg, BorderLayout.SOUTH);
@@ -232,6 +229,7 @@ public class JFrameMainWindow extends JFrame implements Observer {
 			}
 		});
 		panelSendMsg.add(btnReloadListOfUsers, BorderLayout.NORTH);
+		this.addWindowListener(this);
 		//========================================================================
 		
 		textAreaSendMsg = new JTextArea();
@@ -249,12 +247,7 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	 * @param allUsers list of connected users separated by &
 	 */
 	public void refreshUserList(String allUsers){
-		if (allUsers.contains("&")){
-			//hacer split
-		}
-		else{
-			//solo un usuario , no split xk no existe &
-		}
+		
 		String[] users = allUsers.split("&");
 		if (users.length!=0) {
 			DefaultListModel<String> listModel = new DefaultListModel<>();
@@ -290,33 +283,7 @@ public class JFrameMainWindow extends JFrame implements Observer {
 					this.btnReloadListOfUsers.setEnabled(true);
 					this.textAreaHistory.setText("");
 					this.textAreaSendMsg.setText("");
-					refreshUserList(listaDeUsuarios);
-//					
-//					this.setTitle("Chat main window - 'Connected'");
-					//Obtain the list of connected Users
-//					List<String> connectedUsers = this.controller.getConnectedUsers();
-//					
-//					if (!connectedUsers.isEmpty()) {
-//						DefaultListModel<String> listModel = new DefaultListModel<>();
-//						
-//						for (String user : connectedUsers) {
-//							listModel.addElement(user);
-//						}
-//						
-//						this.listUsers.setModel(listModel);
-//						
-//						this.txtFieldServerIP.setEditable(false);
-//						this.txtFieldServerPort.setEditable(false);
-//						this.txtFieldNick.setEditable(false);
-//						this.btnConnect.setText("Disconnect");
-//						this.btnSendMsg.setEnabled(true);
-//						this.textAreaHistory.setText("");
-//						this.textAreaSendMsg.setText("");
-//						
-//						this.setTitle("Chat main window - 'Connected'");
-//					} else {
-//						JOptionPane.showMessageDialog(this, "No clients are connected.", "Chat initialization error", JOptionPane.WARNING_MESSAGE);					
-//					}			
+					refreshUserList(listaDeUsuarios);		
 				} else {
 					JOptionPane.showMessageDialog(this, "Can't connect to the server.", "Connection error", JOptionPane.ERROR_MESSAGE);
 				}
@@ -329,18 +296,6 @@ public class JFrameMainWindow extends JFrame implements Observer {
 		} else {
 			//Disconnect from the server
 			if (this.controller.disconnect()) {
-				//al metodo disconnectionSuccessful
-//				this.txtFieldServerIP.setEditable(true);
-//				this.txtFieldServerPort.setEditable(true);
-//				this.txtFieldNick.setEditable(true);
-//				this.listUsers.setEnabled(true);
-//				this.listUsers.clearSelection();
-//				this.btnConnect.setText("Connect");
-//				this.btnSendMsg.setEnabled(false);
-//				this.btnReloadListOfUsers.setEnabled(false);
-//				this.textAreaHistory.setText("");
-//				this.textAreaSendMsg.setText("");
-//				this.setTitle("Chat main window - 'Disconnected'");
 			} else {
 				JOptionPane.showMessageDialog(this, "Disconnection from the server fails.", "Disconnection error", JOptionPane.ERROR_MESSAGE);				
 			}
@@ -487,5 +442,52 @@ public class JFrameMainWindow extends JFrame implements Observer {
 	private void askForListOfUsers(){
 		System.out.println("Peticion de lista de usuarios");
 		this.controller.getConnectedUsers();
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		if (this.controller.getConnectedUser()!=null) {
+			this.controller.disconnect();
+			System.exit(0);
+		} else {
+			JOptionPane.showMessageDialog(this, "Disconnection from the server fails.", "Disconnection error", JOptionPane.ERROR_MESSAGE);				
+		}
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		
+		
 	}
 }
