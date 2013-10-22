@@ -112,27 +112,7 @@ public class ChatClientController{
 		return numberOfMessages;
 	}
 	
-	/**This method divides the message sent by the user in parts of 1024 bits.
-	 * 
-	 * @param completeMessage message sent by the user
-	 * @return aMessages is an arrayList that contains in each position
-	 * each part of the split message.
-	 */
-	private ArrayList<byte[]> divideMessage (String completeMessage){
-		ArrayList<byte[]> aMessages = new ArrayList<byte[]>();
-		int numberOfMessages = calculateNumberOfMessages(completeMessage);
-		int a= completeMessage.length()/numberOfMessages;
-		String message;
-		for (int i=0; i<numberOfMessages;i++){
-			message= completeMessage.substring(a*i, a*(i+1));
-			if(i!=numberOfMessages){
-				message.concat("&");
-			}
-			aMessages.add(message.getBytes());
-		}
-		return aMessages;		
-	}
-	
+		
 	/**
 	 * This method sends a datagramPacket to the server
 	 * @param message this corresponds to every command or message the user sent to the server.
