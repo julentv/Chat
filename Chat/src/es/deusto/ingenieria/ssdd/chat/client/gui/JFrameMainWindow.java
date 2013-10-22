@@ -219,7 +219,7 @@ public class JFrameMainWindow extends JFrame implements Observer, WindowListener
 		panelSendMsg.add(btnSendMsg, BorderLayout.EAST);
 		
 		//========================================================================
-		//Añadido por mi (boton de actualizar)
+		//Button of reload the list of connected users
 		btnReloadListOfUsers = new JButton("Reload list of users");
 		btnReloadListOfUsers.setEnabled(false);
 		btnReloadListOfUsers.setToolTipText("Reload list of ussers");
@@ -259,6 +259,8 @@ public class JFrameMainWindow extends JFrame implements Observer, WindowListener
 			this.listUsers.setModel(listModel);
 		}
 	}
+	
+	
 	private void btnConnectClick() {
 
 		if (!this.controller.isConnected()) {
@@ -310,6 +312,10 @@ public class JFrameMainWindow extends JFrame implements Observer, WindowListener
 		JOptionPane.showMessageDialog(this, "The nick is already used.");
 	}
 	
+	/**
+	 * THis method is responsible of changing elements state in the GUI
+	 * when the disconnection has been made with success.
+	 */
 	@SuppressWarnings("rawtypes")
 	public void disconnectionSuccessful(){
 		this.txtFieldServerIP.setEditable(true);
@@ -327,6 +333,8 @@ public class JFrameMainWindow extends JFrame implements Observer, WindowListener
 		JOptionPane.showMessageDialog(this, "Disconnection successful.");
 	}
 	
+	//The following methods corresponds to emergent window that notifies to the user
+	//about the chat state.
 	public void connectionFailed(){
 		JOptionPane.showMessageDialog(this, "Connection failed.");
 	}
@@ -384,7 +392,7 @@ public class JFrameMainWindow extends JFrame implements Observer, WindowListener
 			
 			String message = this.textAreaSendMsg.getText().trim();
 			
-			//envío del mensaje
+			//message sent
 			controller.sendMessage("108&"+this.controller.getChatReceiver()+"&"+message);
 			appendMyMessageToHistory(message,this.controller.getConnectedUser(),new Date().getTime());
 			textAreaSendMsg.setText("");
@@ -456,6 +464,7 @@ public class JFrameMainWindow extends JFrame implements Observer, WindowListener
 		
 	}
 
+	//This method is used when the user close the chat window with (X).
 	@Override
 	public void windowClosing(WindowEvent e) {
 			this.controller.disconnect();
